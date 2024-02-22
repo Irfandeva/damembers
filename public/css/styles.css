@@ -1,0 +1,49 @@
+h4 {
+  margin: 0;
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.da-members-form-cotainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  height: 100%;
+}
+
+.da-members-form-cotainer form {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 30px;
+}
+
+.da-members-form-cotainer form label:not(.first) {
+  margin-top: 16px;
+}
+
+.da-members-form-cotainer form label {}
+
+.da-members-form-cotainer form input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-top: 4px;
+}
+
+.da-members-form-cotainer form input:focus {
+  border: 1px solid #ddd;
+  outline: 1px solid rgb(0, 0, 0);
+}
+
+.da-members-form-cotainer form input[type=submit] {
+  background-color: rgb(0, 0, 0);
+  color: #fff;
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
