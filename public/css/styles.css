@@ -55,3 +55,54 @@ h2 {
   cursor: pointer;
   border: none;
 }
+
+/* 
+POPUPS
+*/
+.popup_container {
+  display: none;
+  text-align: left;
+  max-width: fit-content;
+  position: absolute;
+  background-color: #fff;
+  padding: 16px;
+  right: 50%;
+  top: 20%;
+  transform: translateX(50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.popup_container .del_popup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.popup_container .del_popup span {
+  font-size: 14px;
+}
+
+.del_popup .del_popup_actions {
+  align-self: flex-end;
+  display: flex;
+  gap: 16px;
+}
+
+.del_popup_actions button {
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+.del_popup_actions #no {
+  background-color: #fff;
+  border: 1px solid #eee;
+}
+
+.del_popup_actions #yes {
+  background-color: orangered;
+  border: 1px solid orangered;
+  color: #fff;
+}
