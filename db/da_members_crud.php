@@ -41,9 +41,9 @@ function da_members_show() {
           echo "
               <tr>
                 <td width='10%'>$print->id</td>
-                <td width='20%'>$print->fname</td>
-                <td width='20%'>$print->lname</td>
-                <td width='20%'>$print->desig</td>
+                <td width='20%'>$print->first_name</td>
+                <td width='20%'>$print->last_name</td>
+                <td width='20%'>$print->designation</td>
                 <td width='30%'>
                 <a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>
                 <button type='button'>EDIT</button></a>
@@ -94,31 +94,86 @@ function da_members_add() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'members';
   if (isset($_POST['newsubmit'])) {
-    $fname = sanitize_text_field($_POST['fname']);
-    $lname = sanitize_text_field($_POST['lname']);
+    $fname = sanitize_text_field($_POST['first_name']);
+    $lname = sanitize_text_field($_POST['last_name']);
     $bio = sanitize_text_field($_POST['bio']);
-    $desig = sanitize_text_field($_POST['desig']);
-    $wpdb->query($wpdb->prepare("INSERT INTO $table_name (fname, lname, bio, desig) VALUES (%s, %s, %s, %s)", $fname, $lname, $bio, $desig));
+    $desig = sanitize_text_field($_POST['designation']);
+    $wpdb->query($wpdb->prepare("INSERT INTO $table_name (first_name, last_name, bio, designation) VALUES (%s, %s, %s, %s)", $fname, $lname, $bio, $desig));
   }
+  $inputs = $wpdb->get_results("SELECT * FROM `wp_form_inputs`");
+  // var_dump($inputs)
+
+
 ?>
-  <div class="da-members-form-cotainer">
-    <form action="" method="post">
-      <h2>
+  <div class="wrap">
+    <div class="da-members-add-container">
+      <div class="top">
+        <div class="right-col">
+          <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+        </div>
+      </div>
+      <form action="" method="post">
+        <!-- <h2>
         Add a member
-      </h2>
-      <label for="fname" class="first">First Name</label>
-      <input type="text" id="fname" name="fname" placeholder="First Name">
-      <label for="lname">Last Name</label>
-      <input type="text" id="lname" name="lname" placeholder="Last Name">
-      <label for="bio">Bio</label>
-      <input type="text" id="bio" name="bio" placeholder="Role">
-      <label for="desig">Designation</label>
-      <input type="text" id="desig" name="desig" placeholder="Country">
-      <button id="newsubmit" name="newsubmit" type="submit">INSERT</button>
-    </form>
+      </h2> -->
+        <div class="input-wrapper">
+          <?php
+          foreach ($inputs as $input) {
+          ?>
+            <div class="input-item">
+              <?php
+              $label = ucwords(str_replace('_', ' ', $input->label));
+              if ($input->type == 'select') {
+                echo "
+            <label for=$input->label>$label</label>
+            <select name=$input->label id=$input->label>
+            </select>
+              ";
+              }
+              if ($input->type == 'text') {
+                echo "
+                <label for=$input->label>$label</label>
+                <input type=$input->type name=$input->label id=$input->label>
+            </input>
+              ";
+              } ?>
+            </div>
+          <?php
+          }
+          ?>
+          <!-- <div class="input-item">
+            <label for="fname" class="first">First Name</label>
+            <input type="text" id="fname" name="fname" placeholder="First Name">
+          </div>
+
+          <div class="input-item">
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" name="lname" placeholder="Last Name">
+          </div>
+
+          <div class="input-item">
+            <label for="bio">Bio</label>
+            <input type="text" id="bio" name="bio" placeholder="Role">
+          </div>
+
+          <div class="input-item">
+            <label for="desig">Designation</label>
+            <input type="text" id="desig" name="desig" placeholder="Country">
+          </div> -->
+        </div>
+
+        <div class="form-actions">
+          <button id="newsubmit" name="newsubmit" type="submit">Save And Go Back</button>
+          <button id="newsubmit" name="newsubmit" type="submit">Save And Enter New</button>
+
+        </div>
+      </form>
+    </div>
   </div>
+
 <?php
 }
+
 function da_members_edit() {
   echo "<h1>HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}</h1>";
   global $wpdb;

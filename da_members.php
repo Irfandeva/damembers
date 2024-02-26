@@ -28,9 +28,11 @@ function admin_menu_item() {
   add_menu_page('DA Members', 'DA Members', 'manage_options', 'da-members', 'da_members_show', 'dashicons-schedule', 3);
   add_submenu_page('', 'Add Member', 'Add Member', 'manage_options', 'da-members-add', 'da_members_add');
   add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'da_members_edit');
+  add_submenu_page('da-members', 'Edit Form', 'Edit Form', 'manage_options', 'edit-form', 'edit_form');
 }
 add_action('admin_menu', 'admin_menu_item');
 add_action('admin_footer', 'del_popup');
 
 require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
+require(plugin_dir_path(__FILE__) . '_inc/da_members_edit_form.php');
 require(plugin_dir_path(__FILE__) . '_inc/da_members_popups.php');
