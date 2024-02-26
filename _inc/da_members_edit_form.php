@@ -2,6 +2,7 @@
 function edit_form() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'form_inputs';
+  $table_name_members = $wpdb->prefix . 'members';
   $result = $wpdb->get_results("SELECT * FROM $table_name");
   $form_input_types = array('text', 'select', 'number');
   $form_input_data_types = array('varchar', 'int');
@@ -17,6 +18,15 @@ function edit_form() {
       echo "ERROR SAVING NEW INPUT";
     } else {
       echo "SAVED SUCCESSFULLY";
+      //if new input was added to db successfully, we will create a new table column for that input in table to store values later.
+      $dataType = null;
+      if ($data_type == 'varchar') {
+        $dataType = "varchar($size)";
+      }
+      if ($data_type == 'int') {
+        $dataType = "int($size)";
+      }
+      $wpdb->query($wpdb->prepare("ALTER TABLE $table_name_members ADD $label $dataType"));
     }
   }
 
