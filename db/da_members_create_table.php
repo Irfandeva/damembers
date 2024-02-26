@@ -54,7 +54,6 @@ function create_table() {
   // Prepare data for insertion
   $data_to_insert = array();
   foreach ($inputs as $input) {
-    var_dump($input);
     $data_to_insert[] = array(
       'type' => $input[0],
       'label' => $input[1],
