@@ -1,7 +1,9 @@
 <?php
-function create_table() {
+function initTables() {
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
+
+  //wb members table
   $table_name_da_members = $wpdb->prefix . 'members';
   $daMembersTableQuery = "DROP TABLE IF EXISTS $table_name_da_members;
      CREATE TABLE $table_name_da_members (
@@ -16,11 +18,10 @@ function create_table() {
      member_type varchar(50) NOT NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
      PRIMARY KEY (id)
    ) $charset_collate;";
 
-
+  //form inputs table
   $table_name_forum_inputs = $wpdb->prefix . 'form_inputs';
   $daMembersFormInputsTableQuery = "DROP TABLE IF EXISTS $table_name_forum_inputs;
      CREATE TABLE $table_name_forum_inputs (
@@ -33,12 +34,21 @@ function create_table() {
      PRIMARY KEY (id)
    ) $charset_collate;";
 
-  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+  //input values table
+  $table_name_forum_input_values = $wpdb->prefix . 'form_input_values';
+  $daMembersFormInputValuesTableQuery = "DROP TABLE IF EXISTS $table_name_forum_input_values;
+     CREATE TABLE $table_name_forum_input_values (
+     id mediumint(6) NOT NULL AUTO_INCREMENT,
+     country varchar(20) NOT NULL,
+     PRIMARY KEY (id)
+   ) $charset_collate;";
 
+  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
   dbDelta($daMembersTableQuery);
   dbDelta($daMembersFormInputsTableQuery);
+  dbDelta($daMembersFormInputValuesTableQuery);
 
-  //  initial form inputs
+  //  initial default form inputs/fields
   // (type,label,data_type,size,requird)
   $inputs = array(
     array('text', 'first_name', 'varchar', '20', '1'),
@@ -60,11 +70,20 @@ function create_table() {
       'data_type' => $input[2],
       'size' => $input[3],
       'required' => $input[4],
-
     );
   }
 
   foreach ($data_to_insert as $dti) {
     $wpdb->insert($table_name_forum_inputs, $dti);
   }
+}
+
+function resetTables() {
+  global $wpdb;
+  $table_name_forum_inputs = $wpdb->prefix . 'form_inputs';
+  $table_name_forum_input_values = $wpdb->prefix . 'form_input_values';
+  $drop_form_input_values_table = "DROP TABLE IF EXISTS $table_name_forum_input_values;";
+  $drop_form_input_table = "DROP TABLE IF EXISTS $table_name_forum_inputs;";
+  $wpdb->query($drop_form_input_table);
+  $wpdb->query($drop_form_input_values_table);
 }
