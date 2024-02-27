@@ -93,15 +93,27 @@ function da_members_show() {
 function da_members_add() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'members';
-  if (isset($_POST['newsubmit'])) {
-    $fname = sanitize_text_field($_POST['first_name']);
-    $lname = sanitize_text_field($_POST['last_name']);
-    $bio = sanitize_text_field($_POST['bio']);
-    $desig = sanitize_text_field($_POST['designation']);
-    $wpdb->query($wpdb->prepare("INSERT INTO $table_name (first_name, last_name, bio, designation) VALUES (%s, %s, %s, %s)", $fname, $lname, $bio, $desig));
-  }
   $inputs = $wpdb->get_results("SELECT * FROM `wp_form_inputs`");
-  // var_dump($inputs)
+
+  $record = array();
+  if (isset($_POST['newsubmit'])) {
+    //loop through inputs that we get from db,check if user has entered any value in against the labels of those inpts and save the record
+    foreach ($inputs as $input) {
+      if (isset($_POST[$input->label]) && !empty($_POST[$input->label])) {
+        $record[$input->label] = $_POST[$input->label];
+      }
+    }
+    $wpdb->insert($table_name, $record);
+
+    echo "<pre>";
+    var_dump($record);
+    echo "</pre>";
+    // $fname = sanitize_text_field($_POST['first_name']);
+    // $lname = sanitize_text_field($_POST['last_name']);
+    // $bio = sanitize_text_field($_POST['bio']);
+    // $desig = sanitize_text_field($_POST['designation']);
+    // $wpdb->query($wpdb->prepare("INSERT INTO $table_name (first_name, last_name, bio, designation) VALUES (%s, %s, %s, %s)", $fname, $lname, $bio, $desig));
+  }
 
 
 ?>
@@ -130,13 +142,22 @@ function da_members_add() {
             </select>
               ";
               }
-              if ($input->type == 'text') {
+              if ($input->type == 'text' || $input->type == 'number') {
                 echo "
                 <label for=$input->label>$label</label>
                 <input type=$input->type name=$input->label id=$input->label>
             </input>
               ";
-              } ?>
+              }
+              if ($input->type == 'checkbox') {
+                echo "
+                <label for=$input->label>$label</label>
+                <input type=$input->type name=$input->label id=$input->label value=$input->type>
+            </input>
+              ";
+              }
+
+              ?>
             </div>
           <?php
           }
