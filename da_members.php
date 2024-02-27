@@ -10,8 +10,9 @@
  **/
 
 
-require(plugin_dir_path(__FILE__) . '/db/da_members_create_table.php');
-register_activation_hook(__FILE__, 'create_table');
+require(plugin_dir_path(__FILE__) . '/db/da_members_tables.php');
+register_activation_hook(__FILE__, 'initTables');
+register_deactivation_hook(__FILE__, 'resetTables');
 
 function enqueue_css_js($hook) {
   if (is_admin()) {
