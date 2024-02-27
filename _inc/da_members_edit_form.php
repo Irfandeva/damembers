@@ -7,6 +7,8 @@ function edit_form() {
   $form_input_types = array('text', 'select', 'number');
   $form_input_data_types = array('varchar', 'text', 'int', 'tinyint');
 
+
+  //ADD NEW FORM INPUT/FIELD
   if (isset($_POST['new_from_input_submit'])) {
     $type = sanitize_text_field($_POST['type']);
     $label = sanitize_text_field($_POST['label']);
@@ -24,6 +26,26 @@ function edit_form() {
     }
   }
 
+  //EDIT/UPDATE EXIXTING FORM INPUT/FIELD
+  if (isset($_POST['form_input_submit_upt'])) {
+    $id = sanitize_text_field($_POST['id']);
+    $type = sanitize_text_field($_POST['type']);
+    $label = sanitize_text_field($_POST['label']);
+    $data_type = sanitize_text_field($_POST['data_type']);
+    $size = (string)sanitize_text_field($_POST['size']);
+    $required = sanitize_text_field($_POST['required']);
+    $updateQuery = $wpdb->query("UPDATE $table_name SET type='$type', label='$label', data_type='$data_type', size='$size', required='$required' WHERE id='$id'");
+
+    if (!$updateQuery) {
+      echo "ERROR UPDATING INPUT" . $wpdb->last_error;
+    } else {
+      echo "UPDATED SUCCESSFULLY";
+      //if new from input was added to db successfully, we will create a new table column for that input in table to store values later.
+      // $dataType = $data_type . "(" . $size . ")";
+      // $wpdb->query($wpdb->prepare("ALTER TABLE $table_name_members ADD $label $dataType"));
+    }
+  }
+
 ?>
   <div class="wrap">
     <h1>Manage Form Fields</h1>
@@ -34,11 +56,10 @@ function edit_form() {
       <?php
       foreach ($result as $input) {
       ?>
-        <!-- add new form input -->
-        <div class="add_form_input">
+        <!-- edit or delete existing form input -->
+        <div class="edit_form_input">
           <form action="" method="post">
             <div class="new_input">
-
               <div class="new_input_row">
                 <label for="type">Input Type</label>
                 <select name="type" id="type">
@@ -79,11 +100,12 @@ function edit_form() {
                   <option value="1" <?php echo $input->required == '1' ? 'selected' : '' ?>>Yes</option>
                 </select>
               </div>
-
             </div>
+            <input type="hidden" name="id" value=<?php echo $input->id ?>>
 
-            <div class="submit_button" style="margin-top: 20px;">
-              <button id="new_from_input_submit" name="new_from_input_submit" type="submit">Save</button>
+            <div class="submit_button" style="">
+              <button id="form_input_submit_del" name="form_input_submit_del" type="submit">DELETE</button>
+              <button id="form_input_submit_upt" name="form_input_submit_upt" type="submit">UPDATE</button>
             </div>
           </form>
         </div>
@@ -95,7 +117,6 @@ function edit_form() {
       <h3>ADD NEW INPUT</h3>
       <form action="" method="post">
         <div class="new_input">
-
           <div class="new_input_row">
             <label for="type">Input Type</label>
             <select name="type" id="type">
@@ -146,4 +167,8 @@ function edit_form() {
 
   </div><!-- end of wrap div  -->
 <?php
+}
+function addValues() {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'form_inputs';
 }
