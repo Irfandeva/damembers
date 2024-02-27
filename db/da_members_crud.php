@@ -1,6 +1,6 @@
 <?php
 
-function da_members_show() {
+function daMembersShow() {
   global $wpdb;
   $res = null;
   $table_name = $wpdb->prefix . 'members';
@@ -90,7 +90,7 @@ function da_members_show() {
   </div>
 <?php
 }
-function da_members_add() {
+function daMembersAdd() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'members';
   $inputs = $wpdb->get_results("SELECT * FROM `wp_form_inputs`");
@@ -195,7 +195,7 @@ function da_members_add() {
 <?php
 }
 
-function da_members_edit() {
+function daMembersEdit() {
   echo "<h1>HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}</h1>";
   global $wpdb;
   $table_name = $wpdb->prefix . 'members';

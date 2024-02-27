@@ -1,5 +1,5 @@
 <?php
-function del_popup() {
+function deletePopup() {
 ?>
   <div class="popup_container">
     <div class="del_popup">

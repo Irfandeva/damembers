@@ -1,5 +1,5 @@
 <?php
-function edit_form() {
+function manageFormFields() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'form_inputs';
   $table_name_members = $wpdb->prefix . 'members';
@@ -48,10 +48,10 @@ function edit_form() {
 
 ?>
   <div class="wrap">
-    <h1>Manage Form Fields</h1>
+    <!-- <h1>Manage Form Fields</h1> -->
     <!-- show all  existing inputs in db -->
     <div class="view_form-inputs">
-      <h3>EDIT INPUT FIELDS</h3>
+      <h3>EDIT OR DELETE FORM FIELDS</h3>
 
       <?php
       foreach ($result as $input) {
@@ -114,7 +114,7 @@ function edit_form() {
     </div>
     <!-- add new form input -->
     <div class="add_form_input">
-      <h3>ADD NEW INPUT</h3>
+      <h3>ADD NEW FORM FIELD</h3>
       <form action="" method="post">
         <div class="new_input">
           <div class="new_input_row">
@@ -171,4 +171,9 @@ function edit_form() {
 function addValues() {
   global $wpdb;
   $table_name = $wpdb->prefix . 'form_inputs';
+?>
+  <div class="wrap">
+    <h1>ADD VALUES</h1>
+  </div>
+<?php
 }

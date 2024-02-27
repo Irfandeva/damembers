@@ -23,15 +23,17 @@ function enqueue_css_js($hook) {
 }
 add_action('admin_enqueue_scripts', 'enqueue_css_js');
 
-function admin_menu_item() {
-  add_menu_page('DA Members', 'DA Members', 'manage_options', 'da-members', 'da_members_show', 'dashicons-schedule', 3);
-  add_submenu_page('', 'Add Member', 'Add Member', 'manage_options', 'da-members-add', 'da_members_add');
-  add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'da_members_edit');
-  add_submenu_page('da-members', 'Manage Form Fields', 'Manage Form Fields', 'manage_options', 'edit-form', 'edit_form');
+function adminMenuItem() {
+  add_menu_page('DA Members', 'DA Members', 'manage_options', 'da-members', 'daMembersShow', 'dashicons-schedule', 3);
+  add_submenu_page('', 'Add Member', 'Add Member', 'manage_options', 'da-members-add', 'daMembersAdd');
+  add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'daMembersEdit');
+  add_submenu_page('da-members', 'Manage Form Fields', 'Manage Form Fields', 'manage_options', 'manage-form-fields', 'manageFormFields');
+  add_submenu_page('da-members', 'Add Values', 'Add Values', 'manage_options', 'add-values', 'addValues');
 }
-add_action('admin_menu', 'admin_menu_item');
-add_action('admin_footer', 'del_popup');
+
+add_action('admin_menu', 'adminMenuItem');
+add_action('admin_footer', 'deletePopup');
 
 require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
-require(plugin_dir_path(__FILE__) . '_inc/da_members_edit_form.php');
+require(plugin_dir_path(__FILE__) . '_inc/da_members_form_fields.php');
 require(plugin_dir_path(__FILE__) . '_inc/da_members_popups.php');
