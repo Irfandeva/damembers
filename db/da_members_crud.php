@@ -1,6 +1,7 @@
 <?php
 
 function daMembersShow() {
+
   global $wpdb;
   $res = null;
   $table_name = $wpdb->prefix . 'members';
@@ -18,7 +19,7 @@ function daMembersShow() {
     <div class="top">
       <h1 class="wp-heading-inline">DA Members</h1>
       <div class="right-col">
-        <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">DOWNLOAD &darr; </a>
+        <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members&download" class="page-title-action">DOWNLOAD &darr; </a>
         <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">UPLOAD &uarr; </a>
         <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add + </a>
       </div>
