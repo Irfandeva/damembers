@@ -3,9 +3,10 @@ function daMembersDownload() {
 
   // Function to export data in Excel format
   global $wpdb;
+  $da_members_table = $wpdb->prefix . "da_members";
   if (isset($_GET['download'])) {
     // Query database to fetch data (example)
-    $results = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}members");
+    $results = $wpdb->get_results("SELECT * FROM $da_members_table");
 
     // Initialize an empty string to store Excel content
     $excelContent = '';
