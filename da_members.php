@@ -22,7 +22,7 @@ add_action('init', 'daMembersDownload');
 require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_form_fields.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_popups.php');
-require(plugin_dir_path(__FILE__) . 'inc/daex.php');
+require(plugin_dir_path(__FILE__) . 'inc/da_members_excel.php');
 
 function enqueue_css_js($hook) {
   if (is_admin()) {
@@ -37,6 +37,4 @@ function adminMenuItem() {
   add_submenu_page('', 'Add Member', 'Add Member', 'manage_options', 'da-members-add', 'daMembersAdd');
   add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'daMembersEdit');
   add_submenu_page('da-members', 'Manage Form Fields', 'Manage Form Fields', 'manage_options', 'manage-form-fields', 'manageFormFields');
-  add_submenu_page('da-members', 'Add Values', 'Add Values', 'manage_options', 'add-values', 'addValues');
-  // add_submenu_page('da-members', 'Download', 'Download', 'manage_options', 'download', 'daMembersDownload');
 }
