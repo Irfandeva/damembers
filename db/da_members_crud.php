@@ -4,11 +4,12 @@ function daMembersShow() {
 
   global $wpdb;
   $res = null;
-  $table_name = $wpdb->prefix . 'members';
+  $numberOfPropertiesToShow = 3;
+  $da_members_table = $wpdb->prefix . 'da_members';
   if (isset($_GET['del_id'])) {
     $id = $_GET['del_id'];
     if (!empty($id))
-      $res = $wpdb->query("DELETE FROM $table_name WHERE id='$id'");
+      $res = $wpdb->query("DELETE FROM $da_members_table WHERE id='$id'");
   }
   if ($res == 1)
     echo "<div id='message' class='notice is-dismissible updated'>
@@ -29,28 +30,42 @@ function daMembersShow() {
       <thead>
         <tr>
           <th width="10%">User ID</th>
-          <th width="20%">First Name</th>
-          <th width="20%">Last Name</th>
-          <th width="20%">Designation</th>
+          <?php
+          $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
+          $fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table ORDER BY priority ASC");
+
+          for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
+            foreach ($fields as $field) {
+              if ($field->priority == $i) {
+                $label = ucwords(str_replace('_', ' ', $field->label));
+                echo "<th width='20%'>$label</th>";
+              }
+            }
+          }
+          ?>
           <th width="30%">Actions</th>
         </tr>
       </thead>
       <tbody>
         <?php
-        $result = $wpdb->get_results("SELECT * FROM $table_name");
+        $result = $wpdb->get_results("SELECT * FROM $da_members_table");
         foreach ($result as $print) {
-          echo "
-              <tr>
-                <td width='10%'>$print->id</td>
-                <td width='20%'>$print->first_name</td>
-                <td width='20%'>$print->last_name</td>
-                <td width='20%'>$print->designation</td>
-                <td width='30%'>
-                <a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>
-                <button type='button'>EDIT</button></a>
-                 <button type='button' class='delete_da_member' data-del-id=$print->id>DELETE</button>
-                 </td>
-              </tr>";
+          echo "<tr>
+                <td width='10%'>$print->id</td>";
+          for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
+            //show the data based on labels with priority from 1 - $numberOfPropertiesToShow
+            foreach ($fields as $field) {
+              if ($field->priority == $i) {
+                $label = $field->label;
+                echo "<td width='20%'>{$print->$label}</td>";
+              }
+            }
+          }
+          echo "<td width='30%'>
+          <a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>
+          <button type='button' class='button button-primary'>EDIT</button></a>
+           <button type='button' class='button button-primary delete_da_member' data-del-id=$print->id>DELETE</button>
+           </td></tr>";
         }
         ?>
       </tbody>
@@ -60,7 +75,7 @@ function daMembersShow() {
     <?php
     if (isset($_GET['upt'])) {
       $upt_id = $_GET['upt'];
-      $result = $wpdb->get_results("SELECT * FROM $table_name WHERE user_id='$upt_id'");
+      $result = $wpdb->get_results("SELECT * FROM $da_members_table WHERE user_id='$upt_id'");
       foreach ($result as $print) {
         $name = $print->name;
         $email = $print->email;
@@ -93,30 +108,23 @@ function daMembersShow() {
 }
 function daMembersAdd() {
   global $wpdb;
-  $table_name = $wpdb->prefix . 'members';
-  $inputs = $wpdb->get_results("SELECT * FROM `wp_form_inputs`");
+  $da_members_table = $wpdb->prefix . 'da_members';
+  $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
+  $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
 
   $record = array();
-  if (isset($_POST['newsubmit'])) {
-    //loop through inputs that we get from db,check if user has entered any value in against the labels of those inpts and save the record
-    foreach ($inputs as $input) {
-      if (isset($_POST[$input->label]) && !empty($_POST[$input->label])) {
-        $record[$input->label] = $_POST[$input->label];
+  if (isset($_POST['newsubmit']) || isset($_POST['newsubmit_and_go_back'])) {
+    //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
+    foreach ($form_fields as $form_field) {
+      if (isset($_POST[$form_field->label]) && !empty($_POST[$form_field->label])) {
+        $record[$form_field->label] = $_POST[$form_field->label];
       }
     }
-    $wpdb->insert($table_name, $record);
-
-    echo "<pre>";
-    var_dump($record);
-    echo "</pre>";
-    // $fname = sanitize_text_field($_POST['first_name']);
-    // $lname = sanitize_text_field($_POST['last_name']);
-    // $bio = sanitize_text_field($_POST['bio']);
-    // $desig = sanitize_text_field($_POST['designation']);
-    // $wpdb->query($wpdb->prepare("INSERT INTO $table_name (first_name, last_name, bio, designation) VALUES (%s, %s, %s, %s)", $fname, $lname, $bio, $desig));
+    $wpdb->insert($da_members_table, $record);
+    if (isset($_POST['newsubmit_and_go_back'])) {
+      echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+    }
   }
-
-
 ?>
   <div class="wrap">
     <div class="da-members-add-container">
@@ -131,29 +139,32 @@ function daMembersAdd() {
       </h2> -->
         <div class="input-wrapper">
           <?php
-          foreach ($inputs as $input) {
+          require(plugin_dir_path(__DIR__) . '/utils/da_members_data.php');
+          foreach ($form_fields as $form_field) {
           ?>
             <div class="input-item">
               <?php
-              $label = ucwords(str_replace('_', ' ', $input->label));
-              if ($input->type == 'select') {
-                echo "
-            <label for=$input->label>$label</label>
-            <select name=$input->label id=$input->label>
-            </select>
-              ";
+              $label = ucwords(str_replace('_', ' ', $form_field->label));
+              if ($form_field->field_type == 'select') {
+                echo
+                "<label for=$form_field->label>$label</label>
+                <select name=$form_field->label id=$form_field->label>";
+                foreach ($select_fields_data[$form_field->field_values] as $data) {
+                  echo "<option value='$data'>$data</option>";
+                }
               }
-              if ($input->type == 'text' || $input->type == 'number') {
+              echo "</select>";
+              if ($form_field->field_type == 'text' || $form_field->field_type == 'number' || $form_field->field_type == 'date') {
                 echo "
-                <label for=$input->label>$label</label>
-                <input type=$input->type name=$input->label id=$input->label>
+                <label for=$form_field->label>$label</label>
+                <input type=$form_field->field_type name=$form_field->label id=$form_field->label>
             </input>
               ";
               }
-              if ($input->type == 'checkbox') {
+              if ($form_field->field_type == 'checkbox') {
                 echo "
-                <label for=$input->label>$label</label>
-                <input type=$input->type name=$input->label id=$input->label value=$input->type>
+                <label for=$form_field->label>$label</label>
+                <input type=$form_field->field_type name=$form_field->label id=$form_field->label value=$form_field->field_type>
             </input>
               ";
               }
@@ -163,48 +174,99 @@ function daMembersAdd() {
           <?php
           }
           ?>
-          <!-- <div class="input-item">
-            <label for="fname" class="first">First Name</label>
-            <input type="text" id="fname" name="fname" placeholder="First Name">
-          </div>
-
-          <div class="input-item">
-            <label for="lname">Last Name</label>
-            <input type="text" id="lname" name="lname" placeholder="Last Name">
-          </div>
-
-          <div class="input-item">
-            <label for="bio">Bio</label>
-            <input type="text" id="bio" name="bio" placeholder="Role">
-          </div>
-
-          <div class="input-item">
-            <label for="desig">Designation</label>
-            <input type="text" id="desig" name="desig" placeholder="Country">
-          </div> -->
         </div>
 
         <div class="form-actions">
-          <button id="newsubmit" name="newsubmit" type="submit">Save And Go Back</button>
-          <button id="newsubmit" name="newsubmit" type="submit">Save And Enter New</button>
-
+          <button id="newsubmit" name="newsubmit_and_go_back" type="submit" class="button button-primary">Save And Go Back</button>
+          <button id="newsubmit" name="newsubmit" type="submit" class="button button-primary">Save And Enter New</button>
         </div>
       </form>
     </div>
   </div>
-
 <?php
 }
 
-function daMembersEdit() {
-  echo "<h1>HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}</h1>";
-  global $wpdb;
-  $table_name = $wpdb->prefix . 'members';
-  if (isset($_POST['uptsubmit'])) {
-    $id = $_POST['uptid'];
-    $name = $_POST['uptname'];
-    $email = $_POST['uptemail'];
-    $wpdb->query("UPDATE $table_name SET name='$name',email='$email' WHERE user_id='$id'");
-    // echo "<script>location.replace('admin.php?page=crud.php');</script>";
-  }
+
+//FUNCTION TO EDIT UPDATE A MEMBER
+function daMembersEdit() { ?>
+  <!-- // HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}; -->
+  <div class="wrap">
+    <h1>Edit Member</h1>
+    <?php
+    global $wpdb;
+    $id = $_GET['uptid'];
+    // $wpdb->query("UPDATE $da_members_table SET name='$name',email='$email' WHERE user_id='$id'");
+
+    $da_members_table = $wpdb->prefix . 'da_members';
+    $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
+    $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
+    $da_members = $wpdb->get_results("SELECT * FROM $da_members_table WHERE id = $id");
+    if (!empty($da_members)) {
+      $da_member = $da_members[0];
+    }
+    if (isset($_POST['member_upt'])) {
+      $record = array();
+      //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
+      foreach ($form_fields as $form_field) {
+        if (isset($_POST[$form_field->label]) && !empty($_POST[$form_field->label])) {
+          $record[$form_field->label] = $_POST[$form_field->label];
+        }
+      }
+      $wpdb->update($da_members_table, $record, array('id' => $id));
+    }
+    ?>
+
+    <form action="" method="post">
+      <!-- <h2>
+        Add a member
+      </h2> -->
+      <div class="input-wrapper">
+        <?php
+        require(plugin_dir_path(__DIR__) . '/utils/da_members_data.php');
+        foreach ($form_fields as $form_field) {
+          $label = $form_field->label;
+          $da_member_property = $da_member->$label;
+        ?>
+          <div class="input-item">
+            <?php
+            $label = ucwords(str_replace('_', ' ', $form_field->label));
+            if ($form_field->field_type == 'select') {
+              echo
+              "<label for=$form_field->label>$label</label>
+                <select name=$form_field->label id=$form_field->label>";
+              foreach ($select_fields_data[$form_field->field_values] as $data) {
+                $selected = $da_member_property == $data ? 'selected' : '';
+                echo "<option value='$data'  $selected>$data</option>";
+              }
+            }
+            echo "</select>";
+            if ($form_field->field_type == 'text' || $form_field->field_type == 'number' || $form_field->field_type == 'date') {
+              echo "
+                <label for=$form_field->label>$label</label>
+                <input type=$form_field->field_type name=$form_field->label id=$form_field->label value='$da_member_property'>
+            </input>
+              ";
+            }
+            if ($form_field->field_type == 'checkbox') {
+              echo "
+                <label for=$form_field->label>$label</label>
+                <input type=$form_field->field_type name=$form_field->label id=$form_field->label value=$form_field->field_type>
+            </input>
+              ";
+            }
+            ?>
+          </div>
+        <?php
+        }
+        ?>
+      </div>
+
+      <div class="form-actions" style="justify-content:flex-start">
+        <button id="newsubmit" name="member_upt" type="submit" class="button button-primary">Update</button>
+      </div>
+    </form>
+  </div>
+
+<?php
+
 }
