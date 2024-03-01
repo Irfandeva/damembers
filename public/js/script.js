@@ -18,6 +18,10 @@ jQuery(document).ready(function ($) {
     }
   })
 
+  $('.notice-dismiss').click(function () {
+    $('#message').fadeOut();
+    console.log('clicked');
+  })
 
   function deleteMember(id) {
     $.ajax({

@@ -1,7 +1,6 @@
 <?php
 
 function daMembersShow() {
-
   global $wpdb;
   $res = null;
   $numberOfPropertiesToShow = 3;
@@ -21,7 +20,7 @@ function daMembersShow() {
       <h1 class="wp-heading-inline">DA Members</h1>
       <div class="right-col">
         <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members&download" class="page-title-action">DOWNLOAD &darr; </a>
-        <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">UPLOAD &uarr; </a>
+        <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">UPLOAD &uarr; </a>
         <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add + </a>
       </div>
     </div>
@@ -120,9 +119,14 @@ function daMembersAdd() {
         $record[$form_field->label] = $_POST[$form_field->label];
       }
     }
-    $wpdb->insert($da_members_table, $record);
-    if (isset($_POST['newsubmit_and_go_back'])) {
-      echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+    $addRes = $wpdb->insert($da_members_table, $record);
+    if ($addRes) {
+      if (isset($_POST['newsubmit_and_go_back'])) {
+        echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+      }
+      echo "<div id='message' class='notice is-dismissible updated'>
+  <p>Member deleted successfully</p><button type='button' class='notice-dismiss'>
+  <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
     }
   }
 ?>
@@ -168,7 +172,6 @@ function daMembersAdd() {
             </input>
               ";
               }
-
               ?>
             </div>
           <?php
@@ -186,7 +189,6 @@ function daMembersAdd() {
 <?php
 }
 
-
 //FUNCTION TO EDIT UPDATE A MEMBER
 function daMembersEdit() { ?>
   <!-- // HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}; -->
@@ -200,10 +202,7 @@ function daMembersEdit() { ?>
     $da_members_table = $wpdb->prefix . 'da_members';
     $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
     $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
-    $da_members = $wpdb->get_results("SELECT * FROM $da_members_table WHERE id = $id");
-    if (!empty($da_members)) {
-      $da_member = $da_members[0];
-    }
+
     if (isset($_POST['member_upt'])) {
       $record = array();
       //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
@@ -212,14 +211,19 @@ function daMembersEdit() { ?>
           $record[$form_field->label] = $_POST[$form_field->label];
         }
       }
-      $wpdb->update($da_members_table, $record, array('id' => $id));
+      $update_res = $wpdb->update($da_members_table, $record, array('id' => $id));
+      if ($update_res == 1)
+        echo "<div id='message' class='notice is-dismissible updated'>
+  <p>Member updated successfully</p><button type='button' class='notice-dismiss'>
+  <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+    }
+    $da_members = $wpdb->get_results("SELECT * FROM $da_members_table WHERE id = $id");
+    if (!empty($da_members)) {
+      $da_member = $da_members[0];
     }
     ?>
 
     <form action="" method="post">
-      <!-- <h2>
-        Add a member
-      </h2> -->
       <div class="input-wrapper">
         <?php
         require(plugin_dir_path(__DIR__) . '/utils/da_members_data.php');

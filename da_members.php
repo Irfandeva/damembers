@@ -37,4 +37,5 @@ function adminMenuItem() {
   add_submenu_page('', 'Add Member', 'Add Member', 'manage_options', 'da-members-add', 'daMembersAdd');
   add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'daMembersEdit');
   add_submenu_page('da-members', 'Manage Form Fields', 'Manage Form Fields', 'manage_options', 'manage-form-fields', 'manageFormFields');
+  add_submenu_page('', 'Upload From Excel', 'Upload From Excel', 'manage_options', 'upload-from-excel', 'uploadFromExcel');
 }

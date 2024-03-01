@@ -5,6 +5,7 @@ function manageFormFields() {
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
   $table_name_members = $wpdb->prefix . 'da_members';
   $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
+
   //EDIT/UPDATE EXIXTING FORM INPUT/FIELD
   if (isset($_POST['form_input_submit_upt'])) {
     $id = sanitize_text_field($_POST['id']);
@@ -73,10 +74,7 @@ function manageFormFields() {
             <td><input type="text" id="label" name="label"></td>
             <td><input type="number" id="priority" name="priority"></td>
             <td>
-              <!-- <button id="form_input_submit_upt" name="form_input_submit_del" type="submit">UPDATE</button> -->
               <input type="submit" id="form_inew_from_input_submit" name="form_inew_from_input_submit" class="button button-primary" value="Save New Form Field">
-
-              <!-- <button id="form_input_submit_del" name="form_input_submit_del" type="submit">DELETE</button> -->
             </td>
           </form>
         </tr>
