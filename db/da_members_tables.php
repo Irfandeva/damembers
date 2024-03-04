@@ -24,7 +24,6 @@ function initTables() {
    ) $charset_collate;";
   dbDelta($daMembersTableQuery);
 
-
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
   $daMembersFormFieldsTableQuery = "DROP TABLE IF EXISTS $da_members_form_fields_table;
      CREATE TABLE $da_members_form_fields_table (
