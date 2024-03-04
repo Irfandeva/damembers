@@ -102,3 +102,14 @@ POPUPS
   flex-direction: column;
   gap: 4px;
 }
+
+.pagination .links a {
+  border: 1px solid #2271b1;
+  padding: 0px 4px;
+  border-radius: 2px;
+}
+
+.pagination .numbered_links .active {
+  background-color: #2271b1;
+  color: #fff;
+}

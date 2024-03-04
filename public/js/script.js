@@ -17,6 +17,13 @@ jQuery(document).ready(function ($) {
       location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
     }
   })
+  // pagination highlighting
+  selectedPage = $('.pagination').attr('id')
+  console.log('====================================');
+  console.log(selectedPage);
+  console.log('====================================');
+  let numberedLinks = $('.numbered_links > a')
+  numberedLinks.eq(selectedPage - 1).addClass('active');
 
   $('.notice-dismiss').click(function () {
     $('#message').fadeOut();

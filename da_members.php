@@ -9,7 +9,7 @@
  * Author URI: not found
  **/
 
-
+require(plugin_dir_path(__FILE__) . '/utils/helper_fns.php');
 require(plugin_dir_path(__FILE__) . '/db/da_members_tables.php');
 register_activation_hook(__FILE__, 'initTables');
 register_deactivation_hook(__FILE__, 'resetTables');
