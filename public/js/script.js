@@ -17,6 +17,16 @@ jQuery(document).ready(function ($) {
       location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
     }
   })
+  let formFields = $('.form-field-input')
+  formFields.each((index, field) => {
+    $(field).focus(function () {
+      let id = $(field).attr('data-id');
+      let checkbox = `#${id}`;
+      console.log();
+      $(checkbox).prop('checked', true);
+    })
+  });
+
   // pagination highlighting
   selectedPage = $('.pagination').attr('id')
   console.log('====================================');
