@@ -6,20 +6,16 @@ function daMembersDownload() {
 
   global $wpdb;
   $da_members_table = $wpdb->prefix . "da_members";
-  $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
-
   $cols = $wpdb->get_results("SHOW COLUMNS FROM $da_members_table;");
   $member_columns_names = array();
   foreach ($cols as $col) {
     $member_columns_names[] = $col->Field;
   }
-
   $excelHeader = "";
   foreach ($member_columns_names as $label) {
     $formattedLabel = ucwords(str_replace('_', ' ', $label));
     $excelHeader .= $formattedLabel . "\t";
   }
-
   // Find the position of the last occurrence of '\t'
   $lastTabIndex = strrpos($excelHeader, "\t");
   // Replace the last occurrence of '\t' with '\n'
@@ -100,13 +96,13 @@ function uploadFromExcel() {
         foreach ($assocArr as $record) {
           $wpdb->insert($da_members_table, $record);
         }
-
-        echo "<pre>";
-        echo "records with eror : " . $emptyRecords . "<br>";
-        echo "records inserted : " . $totalCount - $emptyRecords;
-        echo "</pre>";
-        echo "last error : " . $wpdb->last_error;
+        $records_inserted = $totalCount - $emptyRecords;
+        echo "<div id='message' class='notice is-dismissible updated'>
+        <p>records inserted :$records_inserted records with error : $emptyRecords </p><button type='button' class='notice-dismiss'>
+        <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
       }
+    } else {
+      echo " <div id='message' class='notice error'><p>File format not supported.</p></div>";
     }
   }
   excelFormHtml();
@@ -117,14 +113,13 @@ function excelFormHtml() {
 ?>
   <div class="wrap">
     <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
-    <form action="" method="post" enctype="multipart/form-data">
-      <div class="input-item">
-        <label for="excel-file">Choose Excel File</label>
+    <div class="form-wrapper" style="display: flex;justify-content:center;align-items:center;height:80%;background-color:red">
+      <form action="" method="post" enctype="multipart/form-data">
+        <!-- <label for="excel-file">Choose Excel File</label> -->
         <input type="file" name="excel-file" id="excel-file">
-      </div>
-      <input type="submit" name="submit_excel" id="submit_excel" class="button button-primary" value="Upload">
-    </form>
+        <input type="submit" name="submit_excel" id="submit_excel" class="button button-primary" value="&nbsp;&nbsp;&nbsp;Map&nbsp;&nbsp;&nbsp;">
+      </form>
+    </div>
   </div>
 <?php
-
 }
