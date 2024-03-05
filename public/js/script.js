@@ -17,6 +17,7 @@ jQuery(document).ready(function ($) {
       location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
     }
   })
+  //this will make checkbox checked when a form filed gains focus
   let formFields = $('.form-field-input')
   formFields.each((index, field) => {
     $(field).focus(function () {
