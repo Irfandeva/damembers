@@ -28,41 +28,38 @@ function initTables() {
   $daMembersFormFieldsTableQuery = "DROP TABLE IF EXISTS $da_members_form_fields_table;
      CREATE TABLE $da_members_form_fields_table (
      id mediumint(11) NOT NULL AUTO_INCREMENT,
+     field_name varchar(20) NOT NULL,
      label varchar(20) NOT NULL,
-     field_type varchar(20) NOT NULL,
-     field_values varchar(20),
-     priority smallint(2) DEFAULT '0',
-     required tinyint(1) DEFAULT '0',
+     priority smallint(2) NOT NULL DEFAULT '0',
+     required tinyint(1) NOT NULL DEFAULT '0',
      PRIMARY KEY (id)
    ) $charset_collate;";
   dbDelta($daMembersFormFieldsTableQuery);
 
-  //[label,priority,field type,values,required]
-  //1.label=>label name
-  //2.priority=>1-n
-  //3.field type=>type of input , eg, text, number,select etc
-  //4.values=>name of values array in case field type is select
-  //5.required=>manditory  or not at the time of filling form
+  //[field_name,label,priority,required]
+  //1.field_name column name in table
+  //2.label=>label name
+  //3.priority=>1-n
+  //4.required=>manditory  or not at the time of filling form
   $defaultFormFields = array(
-    array('first_name', '1', 'text', '', '1'),
-    array('last_name', '2', 'text', '', '1'),
-    array('bio', '3', 'text', '', '0'),
-    array('country', '4', 'select', 'countries', '0'),
-    array('designation', '5', 'text', '', '0'),
-    array('address', '6', 'text', '', '0'),
-    array('consituency', '7',  'text', '', '0'),
-    array('member_type', '8', 'select', 'member_types', '0'),
-    array('member_since', '9', 'date', '', '0'),
+    array('first_name', 'First Name', '1',  '1'),
+    array('last_name', 'Last Name', '2',   '1'),
+    array('bio', 'Bio', '3', '0'),
+    array('country', 'Country', '4', '0'),
+    array('designation', 'Designation', '5',  '0'),
+    array('address', 'Address', '6',  '0'),
+    array('consituency', 'Constituency', '7',  '0'),
+    array('member_type', 'Member Type', '8', '0'),
+    array('member_since', 'Member Since', '9',   '0'),
   );
 
   $defaultFormFieldsToInsert = array();
   foreach ($defaultFormFields as $formField) {
     $defaultFormFieldsToInsert[] = array(
-      'label' => $formField[0],
-      'priority' => $formField[1],
-      'field_type' => $formField[2],
-      'field_values' => $formField[3],
-      'required' => $formField[4],
+      'field_name' => $formField[0],
+      'label' => $formField[1],
+      'priority' => $formField[2],
+      'required' => $formField[3],
     );
   }
   foreach ($defaultFormFieldsToInsert as $dfti) {
@@ -76,6 +73,6 @@ function resetTables() {
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
   $dropFormFieldsTable = "DROP TABLE IF EXISTS $da_members_form_fields_table;";
   $dropDaMembers = "DROP TABLE IF EXISTS $da_members_table;";
-  // $wpdb->query($dropDaMembers);
+  $wpdb->query($dropDaMembers);
   $wpdb->query($dropFormFieldsTable);
 }
