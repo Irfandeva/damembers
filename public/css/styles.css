@@ -113,3 +113,14 @@ POPUPS
   background-color: #2271b1;
   color: #fff;
 }
+
+.form-wrapper>form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  /* border: 1px solid #ddd; */
+  border-radius: 4px;
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, .05);
+}
