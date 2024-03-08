@@ -8,7 +8,7 @@
  * Author: Irfan Farooq Deva
  * Author URI: not found
  **/
-
+require(plugin_dir_path(__FILE__) . '/db/config.php');
 require(plugin_dir_path(__FILE__) . '/utils/helper_fns.php');
 require(plugin_dir_path(__FILE__) . '/db/da_members_tables.php');
 register_activation_hook(__FILE__, 'initTables');
@@ -23,6 +23,7 @@ require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_form_fields.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_popups.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_excel.php');
+require(plugin_dir_path(__FILE__) . 'inc/da_members_settings.php');
 
 function enqueue_css_js($hook) {
   if (is_admin()) {
@@ -38,4 +39,5 @@ function adminMenuItem() {
   add_submenu_page('', 'Edit Member', 'Edit Member', 'manage_options', 'da-members-edit', 'daMembersEdit');
   add_submenu_page('da-members', 'Manage Form Fields', 'Manage Form Fields', 'manage_options', 'manage-form-fields', 'manageFormFields');
   add_submenu_page('', 'Upload From Excel', 'Upload From Excel', 'manage_options', 'upload-from-excel', 'uploadFromExcel');
+  add_submenu_page('da-members', 'Settings', 'Settings', 'manage_options', 'da-members-settings', 'da_members_settings');
 }
