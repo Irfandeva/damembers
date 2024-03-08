@@ -23,7 +23,6 @@ jQuery(document).ready(function ($) {
     $(field).focus(function () {
       let id = $(field).attr('data-id');
       let checkbox = `#${id}`;
-      console.log();
       $(checkbox).prop('checked', true);
     })
   });

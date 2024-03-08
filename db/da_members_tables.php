@@ -4,8 +4,7 @@ function initTables() {
 
   global $wpdb;
   $charset_collate = $wpdb->get_charset_collate();
-  //wb members table
-  $da_members_table = $wpdb->prefix . 'da_members';
+  $da_members_table = DA_MEMBERS_TABLE;
   $daMembersTableQuery = "DROP TABLE IF EXISTS $da_members_table;
      CREATE TABLE $da_members_table (
      id mediumint(11) NOT NULL AUTO_INCREMENT,
@@ -24,7 +23,7 @@ function initTables() {
    ) $charset_collate;";
   dbDelta($daMembersTableQuery);
 
-  $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
+  $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $daMembersFormFieldsTableQuery = "DROP TABLE IF EXISTS $da_members_form_fields_table;
      CREATE TABLE $da_members_form_fields_table (
      id mediumint(11) NOT NULL AUTO_INCREMENT,
@@ -65,6 +64,7 @@ function initTables() {
   foreach ($defaultFormFieldsToInsert as $dfti) {
     $wpdb->insert($da_members_form_fields_table, $dfti);
   }
+  update_option('records_per_page', 5);
 }
 
 function resetTables() {
