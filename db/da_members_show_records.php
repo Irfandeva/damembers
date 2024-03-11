@@ -2,16 +2,31 @@
 function daMembersShow() {
   global $wpdb;
   $da_members_table = DA_MEMBERS_TABLE;
-  $res = null;
   $result = array();
-
-  $members = $wpdb->get_results("SELECT * FROM $da_members_table");
+  $search_string = '';
+  $result_rows = array();
+  //bulk actions
+  if (isset($_POST['do_bulk_action']) && isset($_POST['memb_ids'])) {
+    $ids = $_POST['memb_ids'];
+    $action = $_POST['bulk_action'];
+    if ($action == 'delete' && !empty($ids)) {
+      for ($index = 0; $index < count($ids); $index++) {
+        delete_a_member($ids[$index], $wpdb, $da_members_table);
+      }
+    }
+  }
+  //search
+  if (isset($_POST['search-submit'])) {
+    if (!empty($_POST['member-search-input'])) {
+      $search_string = $_POST['member-search-input'];
+    }
+  }
 
   $start = 0;
   $page = $start;
-  $numberOfPropertiesToShow = 5;
-
+  $numberOfPropertiesToShow = get_option('number_of_poperties_columns', 5);;
   $records_per_page = get_option('records_per_page', 20);
+
   if (isset($_GET['page_num'])) {
     $page = $_GET['page_num'] - 1;
     $start = $page * $records_per_page;
@@ -21,107 +36,129 @@ function daMembersShow() {
   if (isset($_GET['del_id'])) {
     $id = $_GET['del_id'];
     if (!empty($id))
-      $res = $wpdb->query("DELETE FROM $da_members_table WHERE id='$id'");
-  }
-  if ($res == 1) {
-    $result['status'] = 'ok';
-    $result['message'] = 'Member deleted successfully...';
+      $delRes =  delete_a_member($id, $wpdb, $da_members_table);
+    if ($delRes == 1) {
+      $result['status'] = 'ok';
+      $result['message'] = 'Member deleted successfully.';
+    }
   }
 
+  $members = $wpdb->get_results("SELECT * FROM $da_members_table");
 ?>
   <div class="wrap">
-    <div class="top">
-      <h1 class="wp-heading-inline">DA Members</h1>
-      <div class="right-col">
-        <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members&download" class="page-title-action">DOWNLOAD &darr; </a>
-        <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">UPLOAD &uarr; </a>
-        <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add + </a>
-      </div>
-    </div>
-    <div class="hello">
-      <?php
-      if (isset($result) && !empty($result)) {
-        if ($result['status'] == 'ok') {
-          echo "<div id='message' class='notice is-dismissible updated widefat'>
+    <h1 class="wp-heading-inline">DA Members</h1>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add New Member</a>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members&download" class="page-title-action">DOWNLOAD &darr; </a>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">UPLOAD &uarr; </a>
+
+    <form action="" method="POST">
+      <p class="search-box" style="padding: 8px 0px;">
+        <label class="screen-reader-text" for="member-search-input">Search Member:</label>
+        <input type="search" id="member-search-input" name="member-search-input" value="<?php echo $search_string; ?>">
+        <input type="submit" id="search-submit" name="search-submit" class="button" value="Search Member">
+      </p>
+    </form>
+
+    <hr class="wp-header-end">
+
+    <?php
+    if (isset($result) && !empty($result)) {
+      if ($result['status'] == 'ok') {
+        echo "<div id='message' class='notice is-dismissible updated'>
         <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
         <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
-        }
-      } ?>
-    </div>
-    <table class="wp-list-table widefat striped">
-      <thead>
-        <tr>
-          <th><input type='checkbox' width="25px"></th>
+      }
+    } ?>
+
+    <form action="" method="post">
+      <table class="wp-list-table widefat striped">
+        <thead>
+          <tr>
+            <td id="check_da_members_rows" class="manage-column column-cb check-column"><input id="cb-select-all-1" type="checkbox">
+              <label for="cb-select-all-1"><span class="screen-reader-text">Select All</span></label>
+            </td>
+            <?php
+            $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
+            $fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table ORDER BY priority ASC");
+            for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
+              foreach ($fields as $field) {
+                if ($field->priority == $i) {
+                  $column = $field->label;
+                  echo "<th>$column</th>";
+                }
+              }
+            }
+            ?>
+          </tr>
+
+        </thead>
+        <tbody>
           <?php
-          $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
-          $fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table ORDER BY priority ASC");
-          for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
-            foreach ($fields as $field) {
-              if ($field->priority == $i) {
-                $column = $field->label;
-                echo "<th width='19%'>$column</th>";
+          //search
+          if (!empty($search_string)) {
+            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table WHERE `first_name` LIKE '%$search_string%'");
+          } else {
+            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table LIMIT $start,$records_per_page");
+          }
+          foreach ($result_rows as $print) {
+            echo "<tr>";
+            echo "<td> <input type='checkbox' name='memb_ids[]' id='' value=" . $print->id . " class='check_memb_rows'> </td>";
+
+            for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
+              //show the data based on labels with priority from 1 - $numberOfPropertiesToShow
+              $count = 0;
+              foreach ($fields as $field) {
+                $count++;
+                if ($field->priority == $i) {
+                  $column = $field->field_name;
+                  echo "<td>";
+                  if ($count == 1) {
+                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id' style='font-size:14px'>" . $print->$column . "</a>";
+                    echo "<div class='da-members-actions'>";
+                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>Edit</a>";
+                    echo "<span>|</span>";
+                    echo "<button type='button' class='delete_da_member' data-del-id=$print->id>Delete</button>";
+                    echo "</div>";
+                  } else {
+                    echo  $print->$column;
+                  }
+                  echo  "</td>";
+                }
               }
             }
           }
           ?>
-          <!-- <th width="20%">Actions</th> -->
-        </tr>
-
-      </thead>
-      <tbody>
-        <?php
-        $result = $wpdb->get_results("SELECT * FROM $da_members_table LIMIT $start,$records_per_page");
-        foreach ($result as $print) {
-          echo "<tr>";
-          echo "<td width='25px'> <input type='checkbox' name='memb_ids[]' id='' value=" . $print->id . " style='margin:0px 0px 8px 8px'> </td>";
-
-          for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
-            //show the data based on labels with priority from 1 - $numberOfPropertiesToShow
-            $count = 0;
-            foreach ($fields as $field) {
-              $count++;
-              if ($field->priority == $i) {
-                $column = $field->field_name;
-                echo "<td>";
-                if ($count == 1) {
-                  echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id' style='font-size:14px'>" . $print->$column . "</a>";
-                  echo "<div class='da-members-actions'>";
-                  echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>Edit</a>";
-                  echo "<span>|</span>";
-                  echo "<button type='button' class='delete_da_member' data-del-id=$print->id>Delete</button>";
-                  echo "</div>";
-                } else {
-                  echo  $print->$column;
-                }
-                echo  "</td>";
-              }
-            }
-          }
-          // echo "<td width='20%'>
-          // <a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>
-          // <button type='button' class='button button-primary'>EDIT</button></a>
-          //  <button type='button' class='button button-primary delete_da_member' data-del-id=$print->id>DELETE</button>
-          //  </td></tr>";
-        }
-        ?>
-        <tr>
-          <td colspan='<?php echo $numberOfPropertiesToShow + 2; ?>'>
-            <?php daMembersPagination($members, $records_per_page); ?>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
+          <tr>
+            <td colspan='<?php echo $numberOfPropertiesToShow + 2; ?>'>
+              <?php daMembersPagination($members, $records_per_page, $search_string, $result_rows); ?>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="alignleft actions bulkactions" style="margin-top: 10px;">
+        <select name="bulk_action" id="bulk-action-selector-bottom">
+          <option value="-1">Bulk actions</option>
+          <option value="delete">Delete</option>
+          <!-- <option value="edit" class="hide-if-no-js">Edit</option> -->
+          <!-- <option value="trash">Move to Trash</option> -->
+        </select>
+        <input type="submit" name="do_bulk_action" id="do_bulk_action" class="button action" value="Apply">
+      </div>
   </div>
+  </form>
+
 <?php
 }
-function daMembersPagination($members, $records_per_page) {
+function daMembersPagination($members, $records_per_page, $search_string, $result_rows) {
 
   $total_members = count($members);
-  if ($total_members === 0) {
+  if (($total_members === 0 && $search_string == '')  || (!empty($search_string) && empty($result_rows))) {
     echo '<p>no records found.</p>';
     return;
   }
+  //if user has hit search button , dont show pagination
+  if (!empty($search_string)) return;
+
   $total_pages = ceil($total_members / $records_per_page);
   $last_page = $total_pages;
   $id = 1;
@@ -179,4 +216,8 @@ function daMembersPagination($members, $records_per_page) {
     </div>
   </div>
 <?php
+}
+function delete_a_member($id, $wpdb, $da_members_table) {
+  $res = $wpdb->query("DELETE FROM $da_members_table WHERE id='$id'");
+  return $res;
 }
