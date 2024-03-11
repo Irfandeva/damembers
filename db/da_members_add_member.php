@@ -2,6 +2,8 @@
 function daMembersAdd() {
   global $wpdb;
   $result = array();
+  $result['status'] = 'ok';
+  $result['message'] = '';
   $da_members_table = DA_MEMBERS_TABLE;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
@@ -10,17 +12,25 @@ function daMembersAdd() {
   if (isset($_POST['newsubmit']) || isset($_POST['newsubmit_and_go_back'])) {
     //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
     foreach ($form_fields as $form_field) {
+      if ($form_field->required == '1' && empty($_POST[$form_field->field_name])) {
+        $result['status'] = 'error';
+        $result['message'] = 'Requied fields can not be empty';
+        break;
+      }
       if (isset($_POST[$form_field->field_name]) && !empty($_POST[$form_field->field_name])) {
         $record[$form_field->field_name] = $_POST[$form_field->field_name];
       }
     }
-    $addRes = $wpdb->insert($da_members_table, $record);
-    if ($addRes) {
-      if (isset($_POST['newsubmit_and_go_back'])) {
-        echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+
+    if ($result['status'] !== 'error') {
+      $addRes = $wpdb->insert($da_members_table, $record);
+      if ($addRes) {
+        if (isset($_POST['newsubmit_and_go_back'])) {
+          echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+        }
+        $result['status'] = 'ok';
+        $result['message'] = 'Member added successfully';
       }
-      $result['status'] = 'ok';
-      $result['message'] = 'Member added successfully';
     }
   }
 ?>
@@ -31,11 +41,13 @@ function daMembersAdd() {
     </div>
 
     <?php
-    if (isset($result) && !empty($result)) {
+    if (isset($result) && $result['message'] !== '') {
       if ($result['status'] == 'ok') {
         echo "<div id='message' class='notice is-dismissible updated'>
   <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
   <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+      } elseif ($result['status'] == 'error') {
+        echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
       }
     }
     ?>
@@ -50,10 +62,10 @@ function daMembersAdd() {
         ?>
           <div class="input-item">
             <?php
-            $column = $form_field->label;
+            $label = $form_field->required == '1' ? $form_field->label . '<span style="color:red"> * </span>' : $form_field->label;
             if ($form_field->label == 'Country') {
               echo
-              "<label for=$form_field->field_name>$column</label>
+              "<label for=$form_field->field_name>$label</label>
                 <select name=$form_field->field_name id=$form_field->field_name>";
               foreach ($select_fields_data['countries'] as $data) {
                 echo "<option value='$data'>$data</option>";
@@ -61,17 +73,17 @@ function daMembersAdd() {
               echo "</select>";
             } elseif ($form_field->label == 'Member Type') {
               echo
-              "<label for=$form_field->field_name>$column</label>
+              "<label for=$form_field->field_name>$label</label>
                 <select name=$form_field->field_name id=$form_field->field_name>";
               foreach ($select_fields_data['member_types'] as $data) {
                 echo "<option value='$data'>$data</option>";
               }
               echo "</select>";
             } elseif ($form_field->label == 'Member Since') {
-              echo "<label for=$form_field->field_name>$column</label>
+              echo "<label for=$form_field->field_name>$label</label>
                 <input type='date' id='$form_field->field_name' name='$form_field->field_name'>";
             } else {
-              echo "<label for=$form_field->field_name>$column</label>
+              echo "<label for=$form_field->field_name>$label</label>
               <input type='text' id='$form_field->field_name' name='$form_field->field_name'>";
             }
             ?>
