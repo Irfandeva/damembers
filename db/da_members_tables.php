@@ -64,7 +64,6 @@ function initTables() {
   foreach ($defaultFormFieldsToInsert as $dfti) {
     $wpdb->insert($da_members_form_fields_table, $dfti);
   }
-  update_option('records_per_page', 5);
 }
 
 function resetTables() {
