@@ -58,17 +58,19 @@ POPUPS
 .popup_container .del_popup {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 6px;
 }
 
 .popup_container .del_popup span {
   font-size: 14px;
+
 }
 
 .del_popup .del_popup_actions {
   align-self: flex-end;
   display: flex;
   gap: 16px;
+  margin-top: 20px;
 }
 
 .del_popup_actions button {
@@ -154,6 +156,10 @@ POPUPS
   border-left: 4px solid red;
 }
 
+.not-inserted.hide {
+  display: none;
+}
+
 .delete_da_member {
   background-color: transparent;
   border: none;
@@ -180,4 +186,9 @@ POPUPS
 
 tr:hover .da-members-actions {
   opacity: 1;
+}
+
+.member {
+  font-style: italic;
+  color: rgb(114, 114, 114);
 }

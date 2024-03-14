@@ -1,4 +1,6 @@
 <?php
+
+
 function daMembersShow() {
   global $wpdb;
   $da_members_table = DA_MEMBERS_TABLE;
@@ -9,10 +11,18 @@ function daMembersShow() {
   if (isset($_POST['do_bulk_action']) && isset($_POST['memb_ids'])) {
     $ids = $_POST['memb_ids'];
     $action = $_POST['bulk_action'];
+    $resultArr = array();
     if ($action == 'delete' && !empty($ids)) {
       for ($index = 0; $index < count($ids); $index++) {
-        delete_a_member($ids[$index], $wpdb, $da_members_table);
+        $res =   delete_a_member($ids[$index], $wpdb, $da_members_table);
+        if ($res == 1) {
+          $resultArr[] = $index;
+        }
       }
+    }
+    if (count($resultArr) > 0) {
+      $result['status'] = 'ok';
+      $result['message'] = count($resultArr) . ' members have been deleted successfully ';
     }
   }
   //search
@@ -48,15 +58,14 @@ function daMembersShow() {
   <div class="wrap">
     <h1 class="wp-heading-inline">DA Members</h1>
     <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add New Member</a>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members&download" class="page-title-action">DOWNLOAD &darr; </a>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">UPLOAD &uarr; </a>
-
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=download" class="page-title-action">Download &darr; </a>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">Upload &uarr; </a>
     <form action="" method="POST">
-      <p class="search-box" style="padding: 8px 0px;">
+      <div class="search-box" style="text-align:end;padding: 8px 0px;">
         <label class="screen-reader-text" for="member-search-input">Search Member:</label>
         <input type="search" id="member-search-input" name="member-search-input" value="<?php echo $search_string; ?>">
         <input type="submit" id="search-submit" name="search-submit" class="button" value="Search Member">
-      </p>
+      </div>
     </form>
 
     <hr class="wp-header-end">
@@ -70,7 +79,7 @@ function daMembersShow() {
       }
     } ?>
 
-    <form action="" method="post">
+    <form action="" method="post" onsubmit="return confirm('Are you sure you want to perform this bulk operation?');">
       <table class="wp-list-table widefat striped">
         <thead>
           <tr>
@@ -96,7 +105,9 @@ function daMembersShow() {
           <?php
           //search
           if (!empty($search_string)) {
-            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table WHERE `first_name` LIKE '%$search_string%'");
+            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table WHERE LOCATE('$search_string', CONCAT_WS(' ', `first_name`, `last_name`, `bio`,`country`, `address`, `designation`,`constituency`)) > 0");
+            // log_it($result_rows);
+            echo_it($wpdb->last_error);
           } else {
             $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table LIMIT $start,$records_per_page");
           }
@@ -117,7 +128,7 @@ function daMembersShow() {
                     echo "<div class='da-members-actions'>";
                     echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>Edit</a>";
                     echo "<span>|</span>";
-                    echo "<button type='button' class='delete_da_member' data-del-id=$print->id>Delete</button>";
+                    echo "<button type='button' class='delete_da_member' data-del-member='$print->first_name" . ' ' . "$print->last_name'  data-del-id=$print->id>Delete</button>";
                     echo "</div>";
                   } else {
                     echo  $print->$column;
@@ -139,8 +150,6 @@ function daMembersShow() {
         <select name="bulk_action" id="bulk-action-selector-bottom">
           <option value="-1">Bulk actions</option>
           <option value="delete">Delete</option>
-          <!-- <option value="edit" class="hide-if-no-js">Edit</option> -->
-          <!-- <option value="trash">Move to Trash</option> -->
         </select>
         <input type="submit" name="do_bulk_action" id="do_bulk_action" class="button action" value="Apply">
       </div>

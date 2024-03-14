@@ -1,47 +1,10 @@
 <?php
+require(plugin_dir_path(__FILE__) . 'export_excel.php');
+
 session_start();
 
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
-function daMembersDownload() {
-
-  global $wpdb;
-  $da_members_table = DA_MEMBERS_TABLE;
-  $cols = $wpdb->get_results("SHOW COLUMNS FROM $da_members_table;");
-  $member_columns_names = array();
-  foreach ($cols as $col) {
-    $member_columns_names[] = $col->Field;
-  }
-  $excel_header = "";
-  foreach ($member_columns_names as $label) {
-    $formatted_label = ucwords(str_replace('_', ' ', $label));
-    $excel_header .= $formatted_label . "\t";
-  }
-  // Find the position of the last occurrence of '\t'
-  $last_tab_index = strrpos($excel_header, "\t");
-  // Replace the last occurrence of '\t' with '\n'
-  $excel_content = substr_replace($excel_header, "\n", $last_tab_index, 1);
-  if (isset($_GET['download'])) {
-    $results = $wpdb->get_results("SELECT * FROM $da_members_table");
-    foreach ($results as $row) {
-      foreach ($member_columns_names as $label) {
-        $excel_content .= $row->$label . "\t";
-      }
-      // Find the position of the last occurrence of '\t'
-      $last_tab_index = strrpos($excel_content, "\t");
-      // Replace the last occurrence of '\t' with '\n'
-      $excel_content = substr_replace($excel_content, "\n", $last_tab_index, 1);
-    }
-    $file_name = "da_members_" . date("Y-m-d") . ".xls";
-    // Set headers for Excel download
-    header("Content-Type: application/vnd.ms-excel");
-    header("Content-Disposition: attachment; filename=\"$file_name\"");
-    // Output Excel content
-    echo $excel_content;
-    // Exit to prevent any additional content from being output
-    exit;
-  }
-}
 function uploadFromExcel() {
   $total_count = 0;
   $empty_records = 0;
@@ -105,7 +68,6 @@ function uploadFromExcel() {
         $form_fields[] = $col;
       }
     }
-    // log_it($form_fields);
 
     // check if user has not selected or ignored any required column
     foreach ($fields as $field) {
@@ -144,14 +106,13 @@ function uploadFromExcel() {
           $res = $wpdb->insert($da_members_table, $record);
           if (!$res) {
             $empty_records++;
-            array_push($error_row_indexes, $index);
+            array_push($error_row_indexes, $index + 1);
           }
         }
       }
     }
     //clear the excel data from session
     unset($_SESSION['excel-data']);
-    // echo $wpdb->last_error;
   }
 ?>
   <div class="wrap">
@@ -196,8 +157,11 @@ function uploadFromExcel() {
       <?php }
       if (isset($_POST['submit_excel_data']) && $result['status'] !== 'error') { ?>
         <div class="result-container">
-          <div class="inserted"><?php echo "inserted record : " . $total_count - $empty_records;  ?></div>
-          <div class="not-inserted">
+          <div class="inserted"><?php $inserted = $total_count - $empty_records;
+                                $msg = $inserted > 1 ? 'records inserted : ' : 'record inserted : ';
+                                echo  $msg . $total_count - $empty_records;  ?></div>
+
+          <div class="not-inserted <?php if (count($error_row_indexes) < 1) echo " hide"; ?>">
             <?php $error_message = count($error_row_indexes) > 1 ? "records with following row numbers have not been inserted : " :
               "record with following row number has not been inserted : ";
             echo $error_message . implode(" ", $error_row_indexes) . " , total : " . $empty_records; ?></div>
@@ -206,4 +170,77 @@ function uploadFromExcel() {
       ?>
     </div>
   <?php
+}
+
+function downloadPage() {
+  $result = array();
+  $result['status'] = 'ok';
+  $result['message'] = '';
+
+  global $wpdb;
+  $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
+  $da_members_table = DA_MEMBERS_TABLE;
+  $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
+  ?>
+    <div class="wrap">
+      <!-- <a href="<?php echo esc_url(get_permalink()) ?>?action=download" class="btn btn-secondary btn-lg" tabindex="-1" role="button" aria-disabled="true">Download</a> -->
+
+      <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+      <h1 class="wp-heading-block">Export to excel</h1>
+      <?php
+      if (isset($result) && $result['message'] !== '') {
+        if ($result['status'] == 'ok') {
+          echo "<div id='message' class='notice is-dismissible updated'>
+        <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
+        <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+        } elseif ($result['status'] == 'error') {
+          echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
+        }
+      }
+      ?>
+    </div>
+
+    <form action="" method="post">
+      <div class="form-wrapper" style="display:flex;gap:24px">
+        <div class='labels-input-wrapper'>
+          <?php
+          echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
+             <input type='checkbox' name='' id='field-ids'>
+             <label for=''> <span style='font-size:18px;color:#333'>Choose Fields</span> </label>
+             </div>";
+          foreach ($form_fields as $form_field) {
+            echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
+               <input type='checkbox'  id ='' name='field_ids[]' value =$form_field->id class='select-form-field-check'>
+               <label for=''>" . $form_field->label . "</label>
+               </div>";
+          }
+          ?>
+        </div>
+        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+          <label for='created_after'> <span style='font-size:16px;color:#333'>Created after</span> </label>
+          <input type='date' name='created_after' id='created_after'>
+        </div>
+        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+          <label for='updated_after'> <span style='font-size:16px;color:#333'>Updated after</span> </label>
+          <input type='date' name='updated_after' id='updated_after'>
+        </div>
+        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+          <label for='department'> <span style='font-size:16px;color:#333'>Choose department</span> </label>
+
+          <select name="department" id="department">
+            <option value="-1">--select--</option>
+            <?php
+            require(plugin_dir_path(__DIR__) . 'data/da_members_data.php');
+            foreach ($select_fields_data['departments'] as $department) {
+              echo "<option value='$department'>$department</option>";
+            }
+            ?>
+          </select>
+        </div>
+      </div>
+      <button id="newsubmit" name="excel-download" type="submit" class="button button-primary">Download</button>
+    </form>
+
+  </div>
+<?php
 }

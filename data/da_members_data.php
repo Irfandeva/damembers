@@ -22,8 +22,10 @@ $countries = array(
   'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
 );
 $member_types = array('type 1', 'type 2', 'type 3');
+$departments = array('dep a', 'dep b', 'dep c');
 //key should match the field_values column values in da_form_fields_table
 $select_fields_data = array(
   'countries' => $countries,
   'member_types' => $member_types,
+  'departments' => $departments,
 );

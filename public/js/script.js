@@ -4,7 +4,9 @@ jQuery(document).ready(function ($) {
   $('.delete_da_member').click(function () {
     $('.popup_container').fadeIn();
     let id = $(this).attr('data-del-id')
+    let memberName = $(this).attr('data-del-member')
     $('.popup_container .del_popup_actions #yes').attr('del-id', id)
+    $('.member').html(`${id} . ${memberName}`)
   })
   $('.del_popup_actions #yes').click(function () {
     // $('.popup_container').fadeOut();
@@ -25,6 +27,13 @@ jQuery(document).ready(function ($) {
     })
   })
 
+  $('#field-ids').change(function () {
+    let checkboxes = $('.select-form-field-check');
+    let state = $(this).is(':checked') ? true : false
+    checkboxes.each((index, checkbox) => {
+      $(checkbox).prop('checked', state);
+    })
+  })
   //this will make checkbox checked when a form filed gains focus
   preVal = {};
   let formFields = $('.form-field-input')
@@ -40,14 +49,6 @@ jQuery(document).ready(function ($) {
     })
   });
 
-  $('.req').change(function () {
-    console.log('====================================');
-    console.log('hello there im a checknbox' + " " + $(this).is(':checked'));
-    console.log('====================================');
-
-  })
-
-
   // pagination highlighting
   selectedPage = $('.pagination').attr('id')
   let numberedLinks = $('.numbered_links > a')
@@ -58,30 +59,4 @@ jQuery(document).ready(function ($) {
     console.log('clicked');
   })
 
-  function deleteMember(id) {
-    $.ajax({
-      method: 'post',
-      url: `http://localhost/wordpress/wp-admin/admin.php?page=da-members`,
-      contentType: 'application/json',
-      Accept: 'application/json',
-      data: JSON.stringify({ del: id }),
-      success: function (res) {
-        console.log(`response: ${res}`);
-      },
-      error: function (res) {
-        console.log(`error: ${res.message}`);
-      },
-    })
-  }
-
-  $.ajax({
-    method: 'get',
-    url: `${pluginUrl}/db/fetch_countries.php?submit=1`,
-    dataType: 'json',
-    success: function (res) {
-      console.log(`response: ${res}`);
-    },
-    error: function (res) {
-    }
-  })
 });

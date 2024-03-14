@@ -44,8 +44,8 @@ function daMembersAdd() {
     if (isset($result) && $result['message'] !== '') {
       if ($result['status'] == 'ok') {
         echo "<div id='message' class='notice is-dismissible updated'>
-  <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
-  <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+             <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
+             <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
       } elseif ($result['status'] == 'error') {
         echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
       }

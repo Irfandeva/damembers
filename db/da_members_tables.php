@@ -17,6 +17,7 @@ function initTables() {
      consituency varchar(20) NULL,
      member_type varchar(50) NULL,
      member_since date DEFAULT CURRENT_DATE,
+     department varchar(50) NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
      PRIMARY KEY (id)
@@ -47,9 +48,10 @@ function initTables() {
     array('country', 'Country', '4', '0'),
     array('designation', 'Designation', '5',  '0'),
     array('address', 'Address', '6',  '0'),
-    array('consituency', 'Constituency', '7',  '0'),
+    array('constituency', 'Constituency', '7',  '0'),
     array('member_type', 'Member Type', '8', '0'),
     array('member_since', 'Member Since', '9',   '0'),
+    array('department', 'Department', '10',   '0'),
   );
 
   $defaultFormFieldsToInsert = array();
