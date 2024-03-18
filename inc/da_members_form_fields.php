@@ -10,7 +10,7 @@ function manageFormFields() {
   //EDIT/UPDATE EXIXTING FORM FIELD
   $res_check = array();
   if (isset($_POST['form_input_submit_upt'])) {
-    $priorities = $_POST['priorities'];
+    $priorities = array_map('sanitize_array', $_POST['priorities']);
     $hasDuplicates = count($priorities) > count(array_unique($priorities));
     if ($hasDuplicates) {
       // echo "<div id='message' class='notice error'><p>Duplicate priorities.</p></div>";
@@ -22,10 +22,10 @@ function manageFormFields() {
       $result['message'] = 'No Fields Selected.';
     }
     if ($result['status'] !== 'error') {
-      $labels = ($_POST['labels']);
-      $ids = $_POST['ids'];
+      $labels = array_map('sanitize_array', $_POST['labels']);
+      $ids = array_map('sanitize_array', $_POST['ids']);
       foreach ($ids as $id) {
-        $u_label = $labels[$id];
+        $u_label = sanitize_text_field($labels[$id]);
         $is_required = "required_ids_" . $id;
         $u_required = isset($_POST[$is_required]) ? '1' : 0;
         $u_priority = $priorities[$id];
@@ -53,7 +53,7 @@ function manageFormFields() {
     <?php
 
 
-    if (isset($result) && $result['message'] !== '') {
+    if (isset($result) && !empty($result['message'])) {
       if ($result['status'] == 'ok') {
         echo "<div id='message' class='notice is-dismissible updated'>
     <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
@@ -62,8 +62,6 @@ function manageFormFields() {
         echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
       }
     }
-
-
 
     $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
     ?>

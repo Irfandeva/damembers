@@ -8,6 +8,7 @@
  * Author: Irfan Farooq Deva
  * Author URI: not found
  **/
+
 add_action('admin_enqueue_scripts', 'enqueue_css_js');
 function enqueue_css_js() {
   if (is_admin()) {
@@ -20,8 +21,9 @@ function enqueue_css_js() {
 require(plugin_dir_path(__FILE__) . '/db/config.php');
 require(plugin_dir_path(__FILE__) . '/utils/helper_fns.php');
 require(plugin_dir_path(__FILE__) . '/db/da_members_tables.php');
-register_activation_hook(__FILE__, 'initTables');
-register_deactivation_hook(__FILE__, 'resetTables');
+
+register_activation_hook(__FILE__, 'init_tables');
+register_deactivation_hook(__FILE__, 'reset_tables');
 
 require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_form_fields.php');
@@ -32,8 +34,6 @@ require(plugin_dir_path(__FILE__) . 'inc/da_members_settings.php');
 
 add_action('admin_menu', 'adminMenuItem');
 add_action('admin_footer', 'deletePopup');
-
-
 
 function adminMenuItem() {
   add_menu_page('DA Members', 'DA Members', 'manage_options', 'da-members', 'daMembersShow', 'dashicons-schedule', 3);

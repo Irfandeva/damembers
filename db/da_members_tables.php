@@ -1,5 +1,5 @@
 <?php
-function initTables() {
+function init_tables() {
   require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
   global $wpdb;
@@ -68,7 +68,7 @@ function initTables() {
   }
 }
 
-function resetTables() {
+function reset_tables() {
   global $wpdb;
   $da_members_table = $wpdb->prefix . 'da_members';
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';

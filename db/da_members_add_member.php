@@ -14,11 +14,11 @@ function daMembersAdd() {
     foreach ($form_fields as $form_field) {
       if ($form_field->required == '1' && empty($_POST[$form_field->field_name])) {
         $result['status'] = 'error';
-        $result['message'] = 'Requied fields can not be empty';
+        $result['message'] = 'Required fields (*) can not be empty.';
         break;
       }
       if (isset($_POST[$form_field->field_name]) && !empty($_POST[$form_field->field_name])) {
-        $record[$form_field->field_name] = $_POST[$form_field->field_name];
+        $record[$form_field->field_name] = sanitize_text_field($_POST[$form_field->field_name]);
       }
     }
 
@@ -41,7 +41,7 @@ function daMembersAdd() {
     </div>
 
     <?php
-    if (isset($result) && $result['message'] !== '') {
+    if (isset($result) && !empty($result['message'])) {
       if ($result['status'] == 'ok') {
         echo "<div id='message' class='notice is-dismissible updated'>
              <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
@@ -52,9 +52,6 @@ function daMembersAdd() {
     }
     ?>
     <form action="" method="post">
-      <!-- <h2>
-        Add a member
-      </h2> -->
       <div class="input-wrapper">
         <?php
         require(plugin_dir_path(__DIR__) . 'data/da_members_data.php');

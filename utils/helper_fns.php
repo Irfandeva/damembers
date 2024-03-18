@@ -28,12 +28,15 @@ function find_match($pattern, $string) {
   echo $pattern . $string . "<br>";
   $pattern = trim_and_tolowercase($pattern);
   $string = trim_and_tolowercase($string);
-  // $pattern = str_replace(' ', '', $pattern);
-  // $string = str_replace(' ', '', $string);
 
   if ($pattern == $string || preg_match("/$pattern/", $string) || preg_match("/$string/", $pattern)) {
     return true;
   } else {
     return false;
   }
+}
+//sanitize array item
+function sanitize_array($arr_item) {
+  if (empty($arr_item)) return '';
+  return sanitize_text_field($arr_item);
 }

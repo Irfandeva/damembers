@@ -1,6 +1,4 @@
 <?php
-
-
 function daMembersShow() {
   global $wpdb;
   $da_members_table = DA_MEMBERS_TABLE;
@@ -9,8 +7,8 @@ function daMembersShow() {
   $result_rows = array();
   //bulk actions
   if (isset($_POST['do_bulk_action']) && isset($_POST['memb_ids'])) {
-    $ids = $_POST['memb_ids'];
-    $action = $_POST['bulk_action'];
+    $ids = array_map('sanitize_array', $_POST['memb_ids']);
+    $action = sanitize_text_field($_POST['bulk_action']);
     $resultArr = array();
     if ($action == 'delete' && !empty($ids)) {
       for ($index = 0; $index < count($ids); $index++) {
@@ -28,7 +26,7 @@ function daMembersShow() {
   //search
   if (isset($_POST['search-submit'])) {
     if (!empty($_POST['member-search-input'])) {
-      $search_string = $_POST['member-search-input'];
+      $search_string = sanitize_text_field($_POST['member-search-input']);
     }
   }
 
@@ -57,7 +55,7 @@ function daMembersShow() {
 ?>
   <div class="wrap">
     <h1 class="wp-heading-inline">DA Members</h1>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add New Member</a>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add New Member &#43;</a>
     <a href="http://localhost/wordpress/wp-admin/admin.php?page=download" class="page-title-action">Download &darr; </a>
     <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">Upload &uarr; </a>
     <form action="" method="POST">
@@ -96,8 +94,7 @@ function daMembersShow() {
                   echo "<th>$column</th>";
                 }
               }
-            }
-            ?>
+            } ?>
           </tr>
 
         </thead>
@@ -105,15 +102,14 @@ function daMembersShow() {
           <?php
           //search
           if (!empty($search_string)) {
-            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table WHERE LOCATE('$search_string', CONCAT_WS(' ', `first_name`, `last_name`, `bio`,`country`, `address`, `designation`,`constituency`)) > 0");
-            // log_it($result_rows);
+            $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table WHERE LOCATE('$search_string', CONCAT_WS(' ', `first_name`, `last_name`, `bio`,`country`, `address`, `designation`,`constituency`,`department`)) > 0");
             echo_it($wpdb->last_error);
           } else {
             $result_rows = $wpdb->get_results("SELECT * FROM $da_members_table LIMIT $start,$records_per_page");
           }
-          foreach ($result_rows as $print) {
+          foreach ($result_rows as $result_row) {
             echo "<tr>";
-            echo "<td> <input type='checkbox' name='memb_ids[]' id='' value=" . $print->id . " class='check_memb_rows'> </td>";
+            echo "<td> <input type='checkbox' name='memb_ids[]' id='' value=" . $result_row->id . " class='check_memb_rows'> </td>";
 
             for ($i = 1; $i <= $numberOfPropertiesToShow; $i++) {
               //show the data based on labels with priority from 1 - $numberOfPropertiesToShow
@@ -124,19 +120,20 @@ function daMembersShow() {
                   $column = $field->field_name;
                   echo "<td>";
                   if ($count == 1) {
-                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id' style='font-size:14px'>" . $print->$column . "</a>";
-                    echo "<div class='da-members-actions'>";
-                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$print->id'>Edit</a>";
+                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$result_row->id' style='font-size:14px'>" . $result_row->$column . "</a> <span id='popup_$result_row->id' style='position:relative'></span>";
+                    echo "<div class='da-members-actions' >";
+                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$result_row->id'>Edit</a>";
                     echo "<span>|</span>";
-                    echo "<button type='button' class='delete_da_member' data-del-member='$print->first_name" . ' ' . "$print->last_name'  data-del-id=$print->id>Delete</button>";
+                    echo "<button type='button' class='delete_da_member' data-del-member='$result_row->first_name" . ' ' . "$result_row->last_name'  data-del-id=$result_row->id>Delete</button>";
                     echo "</div>";
                   } else {
-                    echo  $print->$column;
+                    echo  stripslashes($result_row->$column);
                   }
                   echo  "</td>";
                 }
               }
             }
+            echo "</tr>";
           }
           ?>
           <tr>
@@ -153,11 +150,13 @@ function daMembersShow() {
         </select>
         <input type="submit" name="do_bulk_action" id="do_bulk_action" class="button action" value="Apply">
       </div>
+      <div id="overlay"></div>
   </div>
   </form>
 
 <?php
 }
+//PAGINATION
 function daMembersPagination($members, $records_per_page, $search_string, $result_rows) {
 
   $total_members = count($members);
@@ -175,11 +174,11 @@ function daMembersPagination($members, $records_per_page, $search_string, $resul
     $id = $_GET['page_num'];
   }
 ?>
-  <div class="pagination" id=<?php echo $id; ?> style="width:100%;display: flex;align-items:center; justify-content:flex-start;gap:30px;">
+  <div class="pagination" id=<?php echo $id; ?>>
     <div class="page-info">
       Showing <?php echo (!isset($_GET['page_num'])) ? '1' : $_GET['page_num'] ?> of <?php echo $total_pages ?> Pages
     </div>
-    <div class="links" style="display: flex;align-items:center;gap:8px">
+    <div class="links">
       <?php
       //first button
       if (isset($_GET['page_num']) && $_GET['page_num'] > 1) {
@@ -193,16 +192,14 @@ function daMembersPagination($members, $records_per_page, $search_string, $resul
         echo  "<a href='admin.php?page=da-members&page_num=$previous_page'>Previous</a>";
       } else {
         echo  '<a>Previous</a>';
-      }
-      ?>
+      } ?>
       <!-- numbered links -->
-      <div class="numbered_links" style="display: flex;align-items:center;gap:8px">
+      <div class="numbered_links">
         <?php
         for ($counter = 1; $counter <= $total_pages; $counter++) { ?>
           <a href='admin.php?page=da-members&page_num=<?php echo $counter ?>'><?php echo $counter ?></a>
         <?php
-        }
-        ?>
+        } ?>
       </div>
 
       <?php
@@ -220,8 +217,7 @@ function daMembersPagination($members, $records_per_page, $search_string, $resul
         echo "<a href='admin.php?page=da-members&page_num=$total_pages'>Last</a>";
       } else {
         echo "<a>Last</a>";
-      }
-      ?>
+      } ?>
     </div>
   </div>
 <?php

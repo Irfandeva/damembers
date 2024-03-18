@@ -14,19 +14,23 @@ function daMembersEdit() { ?>
     $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
     $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
 
-    if (isset($_POST['member_upt'])) {
+    if (isset($_POST['member_upt']) || isset($_POST['member_upt_and_go_back'])) {
       $record = array();
       //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
       foreach ($form_fields as $form_field) {
         if (isset($_POST[$form_field->field_name]) && !empty($_POST[$form_field->field_name])) {
-          $record[$form_field->field_name] = $_POST[$form_field->field_name];
+          $record[$form_field->field_name] = sanitize_text_field($_POST[$form_field->field_name]);
         }
       }
       $update_res = $wpdb->update($da_members_table, $record, array('id' => $id));
-      if ($update_res == 1)
+      if ($update_res == 1) {
+        if (isset($_POST['member_upt_and_go_back'])) {
+          echo "<script>location.replace('http://localhost/wordpress/wp-admin/admin.php?page=da-members')</script>";
+        }
         echo "<div id='message' class='notice is-dismissible updated'>
-  <p>Member updated successfully</p><button type='button' class='notice-dismiss'>
-  <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+        <p>Member updated successfully</p><button type='button' class='notice-dismiss'>
+        <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
+      }
     }
     $da_members = $wpdb->get_results("SELECT * FROM $da_members_table WHERE id = $id");
     if (!empty($da_members)) {
@@ -68,8 +72,9 @@ function daMembersEdit() { ?>
               echo "<label for=$form_field->field_name>$column</label>
                 <input type='date' id='$form_field->field_name' name='$form_field->field_name' value='$da_member_property'>";
             } else {
-              echo "<label for=$form_field->field_name>$column</label>
-              <input type='text' id='$form_field->field_name' name='$form_field->field_name' value='$da_member_property'>";
+              $value = htmlentities(stripslashes($da_member_property));
+              echo "<label for=$form_field->field_name>$column</label>";
+              echo "<input type='text' id='$form_field->field_name' name='$form_field->field_name' value='$value'>";
             }
             ?>
           </div>
@@ -80,6 +85,7 @@ function daMembersEdit() { ?>
 
       <div class="form-actions" style="justify-content:flex-start">
         <button id="newsubmit" name="member_upt" type="submit" class="button button-primary">Update</button>
+        <button id="newsubmit" name="member_upt_and_go_back" type="submit" class="button button-primary">Update and go back</button>
       </div>
     </form>
   </div>

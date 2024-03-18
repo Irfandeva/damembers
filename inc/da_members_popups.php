@@ -1,7 +1,7 @@
 <?php
 function deletePopup() {
 ?>
-  <div class="popup_container">
+  <!-- <div class="popup_container">
     <div class="del_popup">
       <span>Are you sure you want to delete this member : </span>
       <span class="member"></span>
@@ -10,6 +10,6 @@ function deletePopup() {
         <button id="yes">Yes</button>
       </div>
     </div>
-  </div>
+  </div> -->
 <?php
 }

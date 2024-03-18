@@ -1,7 +1,6 @@
 <?php
-require(plugin_dir_path(__FILE__) . 'export_excel.php');
-
 session_start();
+require(plugin_dir_path(__FILE__) . 'export_excel.php');
 
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
@@ -9,7 +8,7 @@ function uploadFromExcel() {
   $total_count = 0;
   $empty_records = 0;
   $result = array();
-  $result['status'] = '';
+  $result['status'] = 'ok';
   $result['message'] = '';
 
   global $wpdb;
@@ -44,7 +43,7 @@ function uploadFromExcel() {
           $_SESSION['excel-data'] = $worksheet_arr;
         }
       } else {
-        //if some how, the file wan not found in temp folder
+        //if some how, the file was not found in temp folder
         $result['status'] = 'error';
         $result['message'] = 'Some thing went wrong..';
       }
@@ -124,7 +123,7 @@ function uploadFromExcel() {
       }
     }
     ?>
-    <div class="form-wrapper" style="display: flex;flex-direction:column;justify-content:center;align-items:center;height:80%;">
+    <div class="form-wrapper">
       <form action="" method="post" enctype="multipart/form-data" class="file-form">
         <!-- <label for="excel-file">Choose Excel File</label> -->
         <input type="file" name="excel-file" id="excel-file">
@@ -133,10 +132,10 @@ function uploadFromExcel() {
       <?php
       if (isset($number_of_excel_columns)  /*&& !($number_of_excel_columns > count($fields))*/) { ?>
         <form action="" method="post" style="text-align: center;">
-          <div class="field-mapping-container" style="display: flex;flex-direction:column;gap:20px;margin-bottom:30px;margin-top:30px">
+          <div class="field-mapping-container">
             <?php
             foreach ($excel_header as $col) { ?>
-              <div class="mapping-row" style="display: flex;gap:20px;justify-content:space-between;align-items:center">
+              <div class="mapping-row">
                 <span><?php echo $col; ?></span>
                 <select name="columns[]">
                   <option value="-1"> --select-- </option>
@@ -173,9 +172,6 @@ function uploadFromExcel() {
 }
 
 function downloadPage() {
-  $result = array();
-  $result['status'] = 'ok';
-  $result['message'] = '';
 
   global $wpdb;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
@@ -188,6 +184,10 @@ function downloadPage() {
       <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
       <h1 class="wp-heading-block">Export to excel</h1>
       <?php
+      if (isset($_POST['excel-download']) && !isset($_POST['field_ids'])) {
+        $result['status'] = 'error';
+        $result['message'] = 'You have not selected any field for download!';
+      }
       if (isset($result) && $result['message'] !== '') {
         if ($result['status'] == 'ok') {
           echo "<div id='message' class='notice is-dismissible updated'>
@@ -197,11 +197,12 @@ function downloadPage() {
           echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
         }
       }
+
       ?>
     </div>
 
     <form action="" method="post">
-      <div class="form-wrapper" style="display:flex;gap:24px">
+      <div class="form-wrapper2">
         <div class='labels-input-wrapper'>
           <?php
           echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>

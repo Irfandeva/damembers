@@ -2,12 +2,28 @@ jQuery(document).ready(function ($) {
   let pluginUrl = "../wp-content/plugins/damembers";
 
   $('.delete_da_member').click(function () {
-    $('.popup_container').fadeIn();
+    // $('.popup_container').fadeIn();
     let id = $(this).attr('data-del-id')
     let memberName = $(this).attr('data-del-member')
     $('.popup_container .del_popup_actions #yes').attr('del-id', id)
     $('.member').html(`${id} . ${memberName}`)
+    let popuSpan = `popup_${id}`;
+
+    let popup = `<div class="popup_container">
+<div class="del_popup">
+  <span>Are you sure you want to delete this member ? </span>
+  <!--- <span class="member">${id} . ${memberName}</span>--->
+  <div class="del_popup_actions">
+    <span id="no" onClick='hidePopup(${popuSpan})'>Cancel</span>
+    <span id="yes" onClick='deleteMember(${id})'>Yes</span>
+  </div>
+</div>
+</div>`
+    $('#overlay').css({ 'display': 'block' })
+    $(`#${popuSpan}`).html(popup);
+
   })
+
   $('.del_popup_actions #yes').click(function () {
     // $('.popup_container').fadeOut();
     let id = $(this).attr('del-id')
@@ -60,3 +76,13 @@ jQuery(document).ready(function ($) {
   })
 
 });
+function hidePopup(popuSpan) {
+  jQuery('#overlay').css({ 'display': 'none' })
+  jQuery(popuSpan).html('');
+}
+function deleteMember(id) {
+  if (id) {
+    // jQuery('#overlay').css({ 'display': 'none' })
+    location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
+  }
+}
