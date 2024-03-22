@@ -1,8 +1,8 @@
 <?php
 function daMembersShow() {
   global $wpdb;
+  global $result;
   $da_members_table = DA_MEMBERS_TABLE;
-  $result = array();
   $search_string = '';
   $result_rows = array();
   //bulk actions
@@ -32,7 +32,7 @@ function daMembersShow() {
 
   $start = 0;
   $page = $start;
-  $numberOfPropertiesToShow = get_option('number_of_poperties_columns', 5);;
+  $numberOfPropertiesToShow = get_option('number_of_poperties_columns', 5);
   $records_per_page = get_option('records_per_page', 20);
 
   if (isset($_GET['page_num'])) {
@@ -70,7 +70,7 @@ function daMembersShow() {
 
     <?php
     if (isset($result) && !empty($result)) {
-      if ($result['status'] == 'ok') {
+      if ($result['status'] == 'ok' && $result['message'] !== '') {
         echo "<div id='message' class='notice is-dismissible updated'>
         <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
         <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";

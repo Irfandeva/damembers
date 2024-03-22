@@ -7,11 +7,12 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls;
 function uploadFromExcel() {
   $total_count = 0;
   $empty_records = 0;
-  $result = array();
-  $result['status'] = 'ok';
-  $result['message'] = '';
+  // $result = array();
+  // $result['status'] = 'ok';
+  // $result['message'] = '';
 
   global $wpdb;
+  global $result;
 
   require_once(plugin_dir_path(__DIR__) . 'vendor/autoload.php');
   $da_members_table = DA_MEMBERS_TABLE;
@@ -172,7 +173,6 @@ function uploadFromExcel() {
 }
 
 function downloadPage() {
-
   global $wpdb;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $da_members_table = DA_MEMBERS_TABLE;

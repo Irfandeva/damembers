@@ -3,6 +3,7 @@ ob_start(); // create buffer fo ob_end_clean()
 require_once(plugin_dir_path(__DIR__) . 'vendor/autoload.php');
 if (isset($_POST['excel-download'])) {
   global $wpdb;
+  // global $result;
 
   if (isset($_POST['field_ids'])) {
     $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
@@ -39,7 +40,14 @@ if (isset($_POST['excel-download'])) {
       $file_name = "da-members-" . date('Y-m-d');
       outputEXCEL($membersArray, $file_name);
     } else {
-      echo "<script>alert('no records found with details given.')</script>";
+      $result['status'] = 'error';
+      $result['message'] = 'no records found with details given.';
+      if (isset($result) && $result['message'] !== '') {
+        if ($result['status'] == 'error') {
+          echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
+        }
+      }
+      // echo "<script>alert('no records found with details given.')</script>";
     }
   }
 }

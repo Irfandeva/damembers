@@ -1,9 +1,7 @@
 <?php
 function daMembersAdd() {
   global $wpdb;
-  $result = array();
-  $result['status'] = 'ok';
-  $result['message'] = '';
+  global $result;
   $da_members_table = DA_MEMBERS_TABLE;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
@@ -21,7 +19,6 @@ function daMembersAdd() {
         $record[$form_field->field_name] = sanitize_text_field($_POST[$form_field->field_name]);
       }
     }
-
     if ($result['status'] !== 'error') {
       $addRes = $wpdb->insert($da_members_table, $record);
       if ($addRes) {
@@ -35,27 +32,26 @@ function daMembersAdd() {
   }
 ?>
   <div class="wrap">
-    <div class="da-members-add-container">
-      <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
-      <h1>Add New Member</h1>
-    </div>
-
-    <?php
-    if (isset($result) && !empty($result['message'])) {
-      if ($result['status'] == 'ok') {
-        echo "<div id='message' class='notice is-dismissible updated'>
+    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+    <div class="input-wrapper">
+      <form action="" method="post">
+        <h1>Add New Member</h1>
+        <?php
+        if (isset($result) && !empty($result['message'])) {
+          if ($result['status'] == 'ok') {
+            echo "<div id='message' class='notice is-dismissible updated'>
              <p>" . $result['message'] . "</p><button type='button' class='notice-dismiss'>
              <span class='screen-reader-text'>Dismiss this notice.</span></button></div>";
-      } elseif ($result['status'] == 'error') {
-        echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
-      }
-    }
-    ?>
-    <form action="" method="post">
-      <div class="input-wrapper">
+          } elseif ($result['status'] == 'error') {
+            echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
+          }
+        }
+        ?>
         <?php
         require(plugin_dir_path(__DIR__) . 'data/da_members_data.php');
         foreach ($form_fields as $form_field) {
+          if ($form_field->label == 'Bio')
+            continue;
         ?>
           <div class="input-item">
             <?php
@@ -88,14 +84,16 @@ function daMembersAdd() {
         <?php
         }
         ?>
-      </div>
-
-      <div class="form-actions">
-        <button id="newsubmit" name="newsubmit_and_go_back" type="submit" class="button button-primary">Save And Go Back</button>
-        <button id="newsubmit" name="newsubmit" type="submit" class="button button-primary">Save And Enter New</button>
-      </div>
-    </form>
-  </div>
+        <div class="input-item">
+          <label for="bio">Bio</label>
+          <textarea name='bio' id='default'></textarea>
+        </div>
+        <div class="form-actions">
+          <button id="newsubmit" name="newsubmit_and_go_back" type="submit" class="button button-primary">Save And Go Back</button>
+          <button id="newsubmit" name="newsubmit" type="submit" class="button button-primary">Save And Enter New</button>
+        </div>
+      </form>
+    </div>
   </div>
 <?php
 }

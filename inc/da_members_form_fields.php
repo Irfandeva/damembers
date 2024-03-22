@@ -4,9 +4,6 @@ function manageFormFields() {
   global $wpdb;
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
   $total_form_fields = count($wpdb->get_results("SELECT * FROM $da_members_form_fields_table"));
-  $result = array();
-  $result['status'] = 'ok';
-  $result['message'] = '';
   //EDIT/UPDATE EXIXTING FORM FIELD
   $res_check = array();
   if (isset($_POST['form_input_submit_upt'])) {

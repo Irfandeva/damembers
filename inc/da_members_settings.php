@@ -1,7 +1,4 @@
 <?php
-$result = array();
-$result['status'] = 'ok';
-$result['message'] = '';
 function da_members_settings() {
   if (isset($_POST['save_changes'])) {
     global $wpdb;
