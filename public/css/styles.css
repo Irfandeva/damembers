@@ -1,11 +1,10 @@
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0px;
+*,
+::before,
+::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
-
-.da-members-add-container {}
 
 .input-wrapper form {
   display: flex;
@@ -307,3 +306,57 @@ tr:hover .da-members-actions {
   font-size: 10px;
   color: rgb(114, 114, 114);
 } */
+/* DA MEMBER SETTINGS */
+.settings-wrapper {
+  display: flex;
+}
+
+.settings-wrapper form {
+  flex: 1;
+}
+
+.settings-wrapper .short-codes {
+  width: 320px;
+}
+
+.short-codes h3 {
+  font-weight: 400;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 12px;
+  background-color: #fff;
+  padding: 10px 0px;
+  border: 1px solid #ddd;
+
+}
+
+.settings-wrapper .short-codes img {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.short-codes .title {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgb(99, 99, 99);
+  color: #333;
+  padding: 0;
+  margin: 0;
+}
+
+.short-codes .desc {
+  padding: 0;
+  margin: 4px 0px;
+  color: #555;
+}
+
+.short-codes ul li {
+  background-color: #fff;
+  padding: 8px;
+  /* border-radius: 4px; */
+  border: 1px solid #ddd;
+
+}
+
+.short-codes ul li {}

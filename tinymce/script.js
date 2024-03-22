@@ -14,5 +14,5 @@ tinymce.init({
   //   // favs: { title: 'menu', items: 'code visualaid | searchreplace | emoticons' }
   // },
   // menubar: 'favs file edit view insert format tools table',
-  content_style: 'body{font-family:Helvetica,Arial,sans-serif; font-size:16px}'
+  // content_style: 'body{font-family:Helvetica,Arial,sans-serif; font-size:16px}'
 });
