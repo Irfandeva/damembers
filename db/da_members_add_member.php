@@ -16,7 +16,7 @@ function daMembersAdd() {
         break;
       }
       if (isset($_POST[$form_field->field_name]) && !empty($_POST[$form_field->field_name])) {
-        $record[$form_field->field_name] = sanitize_text_field($_POST[$form_field->field_name]);
+        $record[$form_field->field_name] = $form_field->field_name == 'bio' ? htmlentities($_POST[$form_field->field_name]) : sanitize_text_field($_POST[$form_field->field_name]);
       }
     }
     if ($result['status'] !== 'error') {

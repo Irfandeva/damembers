@@ -16,7 +16,8 @@ function daMembersEdit() {
     //loop through form_fields that we get from db,check if user has entered any value in against the labels of those inpts and save the record
     foreach ($form_fields as $form_field) {
       if (isset($_POST[$form_field->field_name]) && !empty($_POST[$form_field->field_name])) {
-        $record[$form_field->field_name] = ($_POST[$form_field->field_name]);
+        // $record[$form_field->field_name] = ($_POST[$form_field->field_name]);
+        $record[$form_field->field_name] = $form_field->field_name == 'bio' ? htmlentities($_POST[$form_field->field_name]) : sanitize_text_field($_POST[$form_field->field_name]);
       }
     }
     $update_res = $wpdb->update($da_members_table, $record, array('id' => $id));
@@ -91,7 +92,7 @@ function daMembersEdit() {
         ?>
         <div class="input-item">
           <label for="bio">Bio</label>
-          <textarea name='bio' id='default'><?php echo htmlentities(stripslashes($da_member->bio)) ?></textarea>
+          <textarea name='bio' id='default'><?php echo html_entity_decode(stripslashes($da_member->bio)) ?></textarea>
         </div>
         <div class="form-actions">
           <button id="newsubmit" name="member_upt" type="submit" class="button button-primary">Update</button>

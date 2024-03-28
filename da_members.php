@@ -13,6 +13,8 @@ $result['status'] = 'ok';
 $result['message'] = '';
 add_action('admin_enqueue_scripts', 'enqueue_css_js');
 add_action('wp_enqueue_scripts', 'enqueue_user_css_js');
+add_action('init', 'export_to_excel');
+// add_action('init', 'output_excel');
 //for admin
 function enqueue_css_js() {
   wp_enqueue_script('jquery');
@@ -43,6 +45,7 @@ require(plugin_dir_path(__FILE__) . '/db/da_members_crud.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_form_fields.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_popups.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_excel.php');
+require(plugin_dir_path(__FILE__) . 'excel/export_to_excel.php');
 require(plugin_dir_path(__FILE__) . 'inc/da_members_settings.php');
 
 add_action('admin_menu', 'adminMenuItem');
@@ -60,8 +63,6 @@ function adminMenuItem() {
 
 
 //SHORT CODES
-// wp_enqueue_script('bootstrap');
-// wp_enqueue_style('bootstrap');
 if (!is_admin()) {
   add_shortcode('members_by_department', 'members_by_department_sc');
   add_shortcode('da_members', 'all_da_members_sc');

@@ -1,11 +1,12 @@
 <?php
-ob_start(); // create buffer fo ob_end_clean()
-require_once(plugin_dir_path(__DIR__) . 'vendor/autoload.php');
-if (isset($_POST['excel-download'])) {
+function export_to_excel() {
+  require_once(plugin_dir_path(__DIR__) . 'vendor/autoload.php');
+  require_once(plugin_dir_path(__FILE__) . 'fetch_data.php');
   global $wpdb;
-  // global $result;
+  $result['status'] = 'ok';
+  $result['message'] = '';
 
-  if (isset($_POST['field_ids'])) {
+  if (isset($_POST['excel-download']) && isset($_POST['field_ids'])) {
     $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
     $da_members_table = DA_MEMBERS_TABLE;
     $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
@@ -22,11 +23,12 @@ if (isset($_POST['excel-download'])) {
       }
     }
     $fields_string = implode(', ', $fields);
-    if ($department == '-1')
-      $records = $wpdb->get_results("SELECT $fields_string FROM  $da_members_table WHERE `created_at` >='$created_after' AND `updated_at` >='$updated_after';");
-    else
-      $records = $wpdb->get_results("SELECT $fields_string FROM  $da_members_table WHERE `created_at` >='$created_after' AND `updated_at` >='$updated_after' AND `department`='$department';");
-    if (count($records) > 0) {
+    $records_ = fetch_data_for_excel($department, $fields_string, $da_members_table, $created_after, $updated_after);
+
+    if (count($records_) > 0) {
+      if (array_key_exists('bio', json_decode(json_encode($records_[0]), TRUE)))
+        $records = array_map('remove_html', $records_);
+      else $records = $records_;
       $h = json_decode(json_encode($records[0]), TRUE);
       $header_titles = array_keys($h);
       $formatted_heading = array();
@@ -36,31 +38,26 @@ if (isset($_POST['excel-download'])) {
 
       $membersArray = json_decode(json_encode($records), true);
       array_unshift($membersArray, $formatted_heading);
-      // array_columns_delete($membersArray, ['ID']);
       $file_name = "da-members-" . date('Y-m-d');
-      outputEXCEL($membersArray, $file_name);
+      output_excel($membersArray, $file_name);
     } else {
       $result['status'] = 'error';
-      $result['message'] = 'no records found with details given.';
-      if (isset($result) && $result['message'] !== '') {
-        if ($result['status'] == 'error') {
-          echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
-        }
-      }
-      // echo "<script>alert('no records found with details given.')</script>";
+      $result['message'] = 'No records found with given details.';
     }
+  } else {
+    $result['status'] = 'error';
+    $result['message'] = 'No fields have been selected for download.';
   }
+  return $result;
 }
 
-function outputEXCEL($array, $filename = 'da-members', $title = 'damembers') {
+function output_excel($array, $filename = 'da-members', $title = 'damembers') {
   header('Content-Type: application/vnd.ms-excel');
   header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
   header('Cache-Control: max-age=0');
-
   $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
   $spreadsheet->getActiveSheet()->fromArray($array);
   $spreadsheet->getActiveSheet()->setTitle($title);
-  ob_end_clean();
   $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
   $writer->save('php://output');
   exit();

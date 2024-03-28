@@ -1,11 +1,7 @@
 jQuery(document).ready(function ($) {
   let lastOpenedPopup = null;
   $('.bio').click(function () {
-    const bio = $(this).find("input").val();
-    // let bio = "<p>hello <strong>theter</strong></p>"
-    console.log("==============================");
-    console.log(bio);
-    console.log("==============================");
+    const bio = $(this).find("input").val() !== '' ? $(this).find("input").val() : 'Bio not available.';
     const popupId = $(this).attr('data-popup')
 
     const popuSpan = `popup_${popupId}`;

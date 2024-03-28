@@ -12,8 +12,9 @@
   flex-wrap: wrap;
   flex-grow: 1;
   width: 40%;
-  background-color: rgb(255, 255, 255);
+  background-color: #ffffff;
   padding: 20px 40px;
+  border: 2px solid #e8e8e8;
 }
 
 .input-wrapper form input,
@@ -45,6 +46,14 @@
 }
 
 
+.tox-tinymce {
+  border-radius: 4px !important;
+}
+
+.tox-statusbar__branding,
+.tox-promotion {
+  display: none !important;
+}
 
 .form-actions {
   display: flex;
@@ -359,4 +368,6 @@ tr:hover .da-members-actions {
 
 }
 
-.short-codes ul li {}
+textarea {
+  border-radius: 50px;
+}

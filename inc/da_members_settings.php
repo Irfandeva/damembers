@@ -20,10 +20,8 @@ function da_members_settings() {
   $number_of_poperties_columns = get_option('number_of_poperties_columns', 5);
 ?>
   <div class="wrap">
-    <!-- <div class="da-members-add-container"> -->
     <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
     <h1>DA Members Settings</h1>
-    <!-- </div> -->
     <?php
     if (isset($result) && $result['message'] !== '') {
       if ($result['status'] == 'ok') {

@@ -1,6 +1,5 @@
 <?php
 session_start();
-require(plugin_dir_path(__FILE__) . 'export_excel.php');
 
 use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
@@ -173,6 +172,7 @@ function uploadFromExcel() {
 }
 
 function downloadPage() {
+
   global $wpdb;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $da_members_table = DA_MEMBERS_TABLE;
@@ -184,9 +184,13 @@ function downloadPage() {
       <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
       <h1 class="wp-heading-block">Export to excel</h1>
       <?php
-      if (isset($_POST['excel-download']) && !isset($_POST['field_ids'])) {
-        $result['status'] = 'error';
-        $result['message'] = 'You have not selected any field for download!';
+      if (isset($_POST['to-email'])) {
+        require(plugin_dir_path(__DIR__) . 'excel/send_to_mail.php');
+        $result =  send_excel_to_mail();
+      }
+      if (isset($_POST['excel-download'])) {
+        require_once(plugin_dir_path(__DIR__) . 'excel/export_to_excel.php');
+        $result =  export_to_excel();
       }
       if (isset($result) && $result['message'] !== '') {
         if ($result['status'] == 'ok') {
@@ -240,6 +244,7 @@ function downloadPage() {
         </div>
       </div>
       <button id="newsubmit" name="excel-download" type="submit" class="button button-primary">Download</button>
+      <button id="new-mail-submit" name="to-email" type="submit" class="button button-primary">Send Mail</button>
     </form>
 
   </div>
