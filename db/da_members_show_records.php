@@ -55,9 +55,16 @@ function daMembersShow() {
 ?>
   <div class="wrap">
     <h1 class="wp-heading-inline">DA Members</h1>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members-add" class="page-title-action">Add New Member &#43;</a>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=download" class="page-title-action">Download &darr; </a>
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=upload-from-excel" class="page-title-action">Upload &uarr; </a>
+    <?php
+    $add_member_url = admin_url('admin.php?page=da-members-add');
+    $download_url = admin_url('admin.php?page=download');
+    $upload_url = admin_url('admin.php?page=upload-from-excel');
+
+    echo '<a href="' . esc_url($add_member_url) . '" class="page-title-action">Add New Member &#43;</a>';
+    echo '<a href="' . esc_url($download_url) . '" class="page-title-action">Download &darr; </a>';
+    echo '<a href="' . esc_url($upload_url) . '" class="page-title-action">Upload &uarr; </a>';
+
+    ?>
     <form action="" method="POST">
       <div class="search-box" style="text-align:end;padding: 8px 0px;">
         <label class="screen-reader-text" for="member-search-input">Search Member:</label>
@@ -120,11 +127,14 @@ function daMembersShow() {
                   $column = $field->field_name;
                   echo "<td>";
                   if ($count == 1) {
-                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$result_row->id' style='font-size:14px'>" . $result_row->$column . "</a> <span id='popup_$result_row->id' style='position:relative'></span>";
+                    $del_url = admin_url('admin.php?page=da-members');
+                    echo "<a href='" . admin_url('admin.php?page=da-members-edit&uptid=' . $result_row->id) . "' style='font-size:14px'>" . esc_html($result_row->$column) . "</a> <span id='popup_$result_row->id' style='position:relative'></span>";
                     echo "<div class='da-members-actions' >";
-                    echo "<a href='http://localhost/wordpress/wp-admin/admin.php?page=da-members-edit&uptid=$result_row->id'>Edit</a>";
+                    echo "<a href='" . admin_url('admin.php?page=da-members-edit&uptid=' . $result_row->id) . "'>Edit</a>";
+
                     echo "<span>|</span>";
-                    echo "<button type='button' class='delete_da_member' data-del-member='$result_row->first_name" . ' ' . "$result_row->last_name'  data-del-id=$result_row->id>Delete</button>";
+                    echo "<button type='button' class='delete_da_member' data-del-url='" . esc_attr($del_url) . "' data-del-member='" . esc_attr($result_row->first_name . ' ' . $result_row->last_name) . "' data-del-id='" . esc_attr($result_row->id) . "'>Delete</button>";
+
                     echo "</div>";
                   } else {
                     echo  stripslashes($result_row->$column);

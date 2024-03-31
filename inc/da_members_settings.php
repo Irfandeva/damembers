@@ -20,7 +20,10 @@ function da_members_settings() {
   $number_of_poperties_columns = get_option('number_of_poperties_columns', 5);
 ?>
   <div class="wrap">
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+    <?php
+    $admin_page_url = admin_url('admin.php?page=da-members');
+    echo '<a href="' . esc_url($admin_page_url) . '" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>';
+    ?>
     <h1>DA Members Settings</h1>
     <?php
     if (isset($result) && $result['message'] !== '') {

@@ -1,2 +1,3 @@
 <?php
-echo "unauthorised access";
+//silence
+echo "";

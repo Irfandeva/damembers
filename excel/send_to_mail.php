@@ -6,7 +6,13 @@ function send_excel_to_mail() {
   $result['status'] = 'ok';
   $result['message'] = '';
 
-  if (isset($_POST['to-email']) && isset($_POST['field_ids'])) {
+  if (isset($_POST['send-mail']) && isset($_POST['field_ids'])) {
+    $mail_address = $_POST['receivers-mail'];
+    if (empty($mail_address)) {
+      $result['status'] = 'error';
+      $result['message'] = 'Please provide your email address';
+      return $result;
+    }
     $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
     $da_members_table = DA_MEMBERS_TABLE;
     $form_fields = $wpdb->get_results("SELECT * FROM $da_members_form_fields_table");
@@ -39,7 +45,7 @@ function send_excel_to_mail() {
       $membersArray = json_decode(json_encode($records), true);
       array_unshift($membersArray, $formatted_heading);
       $file_name = "da-members-" . date('Y-m-d');
-      $result =   send_Mail($membersArray);
+      $result =   send_Mail($membersArray, $mail_address);
     } else {
       $result['status'] = 'error';
       $result['message'] = 'No records found with given details.';
@@ -51,8 +57,7 @@ function send_excel_to_mail() {
   return $result;
 }
 
-function send_Mail($array) {
-  require(plugin_dir_path(__FILE__) . 'generate_excel.php');
+function send_Mail($array, $mail_address) {
 
   $result['status'] = 'ok';
   $result['message'] = '';
@@ -62,8 +67,9 @@ function send_Mail($array) {
     $result['message'] = 'Error: Temporary file does not exist or is not readable.';
     return $result;
   }
+
   // Email parameters
-  $to = 'logicparadise.irfandeva@gmail.com';
+  $to = "$mail_address";
   $subject = 'Excel file attached';
   $message = 'Please find the attached Excel file.';
   $headers = array('Content-Type: text/html; charset=UTF-8');
@@ -75,6 +81,7 @@ function send_Mail($array) {
 
   // Send email with attachment
   $mail_result = wp_mail($to, $subject, $message, $headers, $attachments);
+  //clear temp memorys
   unlink($temp_file);
   if ($mail_result) {
     $result['status'] = 'ok';
@@ -84,4 +91,17 @@ function send_Mail($array) {
     $result['message'] = 'Failed to send email.';
   }
   return $result;
+}
+
+function generate_excel($array, $filename = 'da-members', $title = 'damembers') {
+  $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+  $spreadsheet->getActiveSheet()->fromArray($array);
+  $spreadsheet->getActiveSheet()->setTitle($title);
+  // Generate temporary file path with file extension
+  $temp_file = tempnam(sys_get_temp_dir(),  $filename . '_') . '.' . 'xls';
+  $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+  // Save Excel data to a temporary file
+  $writer->save($temp_file);
+  // Reurn temporary file path with file extension
+  return $temp_file;
 }

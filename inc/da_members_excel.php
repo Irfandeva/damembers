@@ -115,7 +115,10 @@ function uploadFromExcel() {
   }
 ?>
   <div class="wrap">
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+    <?php
+    $admin_page_url = admin_url('admin.php?page=da-members');
+    echo '<a href="' . esc_url($admin_page_url) . '" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>';
+    ?>
     <?php
     if (isset($result) && !empty($result)) {
       if ($result['status'] == 'error') {
@@ -123,7 +126,7 @@ function uploadFromExcel() {
       }
     }
     ?>
-    <div class="form-wrapper">
+    <div class="form-wrapper" style="position: relative;">
       <form action="" method="post" enctype="multipart/form-data" class="file-form">
         <!-- <label for="excel-file">Choose Excel File</label> -->
         <input type="file" name="excel-file" id="excel-file">
@@ -172,7 +175,8 @@ function uploadFromExcel() {
 }
 
 function downloadPage() {
-
+  $result['status'] = 'ok';
+  $result['message'] = '';
   global $wpdb;
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;
   $da_members_table = DA_MEMBERS_TABLE;
@@ -181,10 +185,13 @@ function downloadPage() {
     <div class="wrap">
       <!-- <a href="<?php echo esc_url(get_permalink()) ?>?action=download" class="btn btn-secondary btn-lg" tabindex="-1" role="button" aria-disabled="true">Download</a> -->
 
-      <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+      <?php
+      $admin_page_url = admin_url('admin.php?page=da-members');
+      echo '<a href="' . esc_url($admin_page_url) . '" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>';
+      ?>
       <h1 class="wp-heading-block">Export to excel</h1>
       <?php
-      if (isset($_POST['to-email'])) {
+      if (isset($_POST['send-mail'])) {
         require(plugin_dir_path(__DIR__) . 'excel/send_to_mail.php');
         $result =  send_excel_to_mail();
       }
@@ -192,6 +199,7 @@ function downloadPage() {
         require_once(plugin_dir_path(__DIR__) . 'excel/export_to_excel.php');
         $result =  export_to_excel();
       }
+
       if (isset($result) && $result['message'] !== '') {
         if ($result['status'] == 'ok') {
           echo "<div id='message' class='notice is-dismissible updated'>
@@ -201,52 +209,61 @@ function downloadPage() {
           echo "<div id='message' class='notice error'><p>" . $result['message'] . "</p></div>";
         }
       }
-
       ?>
-    </div>
 
-    <form action="" method="post">
-      <div class="form-wrapper2">
-        <div class='labels-input-wrapper'>
-          <?php
-          echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
+      <form action="" method="post" style="position: relative">
+        <div class="form-wrapper2" id="f-wrapper">
+          <div class='labels-input-wrapper'>
+            <?php
+            echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
              <input type='checkbox' name='' id='field-ids'>
              <label for=''> <span style='font-size:18px;color:#333'>Choose Fields</span> </label>
              </div>";
-          foreach ($form_fields as $form_field) {
-            echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
+            foreach ($form_fields as $form_field) {
+              echo "<div  style='display:flex;gap:20px;justify-content:flex-start;align-items:center;padding:4px 0px'>
                <input type='checkbox'  id ='' name='field_ids[]' value =$form_field->id class='select-form-field-check'>
                <label for=''>" . $form_field->label . "</label>
                </div>";
-          }
-          ?>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
-          <label for='created_after'> <span style='font-size:16px;color:#333'>Created after</span> </label>
-          <input type='date' name='created_after' id='created_after'>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
-          <label for='updated_after'> <span style='font-size:16px;color:#333'>Updated after</span> </label>
-          <input type='date' name='updated_after' id='updated_after'>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
-          <label for='department'> <span style='font-size:16px;color:#333'>Choose department</span> </label>
-
-          <select name="department" id="department">
-            <option value="-1">--select--</option>
-            <?php
-            require(plugin_dir_path(__DIR__) . 'data/da_members_data.php');
-            foreach ($select_fields_data['departments'] as $department) {
-              echo "<option value='$department'>$department</option>";
             }
             ?>
-          </select>
-        </div>
-      </div>
-      <button id="newsubmit" name="excel-download" type="submit" class="button button-primary">Download</button>
-      <button id="new-mail-submit" name="to-email" type="submit" class="button button-primary">Send Mail</button>
-    </form>
+          </div>
+          <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+            <label for='created_after'> <span style='font-size:16px;color:#333'>Created after</span> </label>
+            <input type='date' name='created_after' id='created_after'>
+          </div>
+          <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+            <label for='updated_after'> <span style='font-size:16px;color:#333'>Updated after</span> </label>
+            <input type='date' name='updated_after' id='updated_after'>
+          </div>
+          <div style="display:flex;flex-direction:column;padding:4px 0px;gap:4px">
+            <label for='department'> <span style='font-size:16px;color:#333'>Choose department</span> </label>
 
+            <select name="department" id="department">
+              <option value="-1">--select--</option>
+              <?php
+              require(plugin_dir_path(__DIR__) . 'utils/data/da_members_data.php');
+              foreach ($select_fields_data['departments'] as $department) {
+                echo "<option value='$department'>$department</option>";
+              }
+              ?>
+            </select>
+          </div>
+        </div>
+        <!-- email popup -->
+        <div class="overlay" id="overlay"></div>
+        <div class="email-popup" id="email-popup">
+          <span id="close-email-popup">Close</span>
+          <p>Enter your email address to receive excel.</p>
+          <input type="email" name="receivers-mail" id="" placeholder="enter you mail">
+          <button id="newsubmit" name="send-mail" type="submit" class="button button-primary">Send Mail</button>
+        </div>
+        <!-- email ends -->
+
+        <button id="newsubmit" name="excel-download" type="submit" class="button button-primary" style="margin-top: 16px;">Download</button>
+        <button id="new-mail-submit" name="to-email" type="submit" class="button button-primary" style="margin-left:8px;margin-top: 16px">Receive on Mail</button>
+
+      </form>
+    </div>
   </div>
 <?php
 }

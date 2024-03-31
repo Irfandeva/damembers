@@ -40,6 +40,7 @@ function sanitize_array($arr_item) {
   if (empty($arr_item)) return '';
   return sanitize_text_field($arr_item);
 }
+//remove html tags
 function remove_html($array_item) {
   $array_item->bio = strip_tags(html_entity_decode(stripslashes($array_item->bio)));
   return $array_item;

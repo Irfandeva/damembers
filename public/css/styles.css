@@ -11,10 +11,11 @@
   flex-direction: column;
   flex-wrap: wrap;
   flex-grow: 1;
-  width: 40%;
+  width: 100%;
   background-color: #ffffff;
   padding: 20px 40px;
-  border: 2px solid #e8e8e8;
+  margin-top: 20px;
+  /* border: 2px solid #e8e8e8; */
 }
 
 .input-wrapper form input,
@@ -35,6 +36,15 @@
   align-self: center;
 }
 
+.input-row {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+}
+
+.input-item {
+  width: 100%;
+}
 
 .input-item {
   /* max-width: 100%; */
@@ -182,6 +192,7 @@ POPUPS
   display: flex;
   flex-direction: column;
   gap: 4px;
+  background-color: blue;
 }
 
 .pagination {
@@ -370,4 +381,42 @@ tr:hover .da-members-actions {
 
 textarea {
   border-radius: 50px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: transparent;
+  z-index: 998;
+  display: none;
+}
+
+.email-popup {
+  position: absolute;
+  background-color: #fff;
+  left: 60px;
+  top: 50%;
+  z-index: 999;
+  border: 1px solid #ddd;
+  padding: 20px;
+  display: none;
+  border-radius: 4px;
+}
+
+/* .email-popup p {
+  background-color: rgba(167, 224, 167, 0.334);
+  color: green;
+  padding: 4px;
+  border-radius: 4px;
+  border-left: 4px solid green;
+} */
+
+#close-email-popup {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
 }

@@ -14,16 +14,15 @@ $result['message'] = '';
 add_action('admin_enqueue_scripts', 'enqueue_css_js');
 add_action('wp_enqueue_scripts', 'enqueue_user_css_js');
 add_action('init', 'export_to_excel');
-// add_action('init', 'output_excel');
+
 //for admin
 function enqueue_css_js() {
   wp_enqueue_script('jquery');
   wp_enqueue_script('da-members-script', plugin_dir_url(__FILE__) . '/public/js/script.js', array('jquery'), '1.0', true);
   wp_enqueue_style('da-members-style', plugin_dir_url(__FILE__) . '/public/css/styles.css');
 
-  wp_enqueue_script('tinymce-jq', plugin_dir_url(__FILE__) . 'tinymce/tinymce.min.js', array('jquery'), null, true);
-  wp_enqueue_script('tinymce-script', plugin_dir_url(__FILE__) . 'tinymce/script.js', array(), null, true);
-  // wp_enqueue_style('tinymce-css', plugin_dir_url(__FILE__ . '/tinymce/tinymce.min.css'), array(), null);
+  wp_enqueue_script('tinymce-jq', plugin_dir_url(__FILE__) . 'libs/tinymce/tinymce.min.js', array('jquery'), null, true);
+  wp_enqueue_script('tinymce-script', plugin_dir_url(__FILE__) . 'libs/tinymce/script.js', array(), null, true);
 }
 //for user
 function enqueue_user_css_js() {
@@ -60,7 +59,6 @@ function adminMenuItem() {
   add_submenu_page('', 'Download', 'Download', 'manage_options', 'download', 'downloadPage');
   add_submenu_page('da-members', 'Settings', 'Settings', 'manage_options', 'da-members-settings', 'da_members_settings');
 }
-
 
 //SHORT CODES
 if (!is_admin()) {

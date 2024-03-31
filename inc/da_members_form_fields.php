@@ -2,6 +2,8 @@
 function manageFormFields() {
 
   global $wpdb;
+  $result['status'] = 'ok';
+  $result['message'] = '';
   $da_members_form_fields_table = $wpdb->prefix . 'da_members_form_fields';
   $total_form_fields = count($wpdb->get_results("SELECT * FROM $da_members_form_fields_table"));
   //EDIT/UPDATE EXIXTING FORM FIELD
@@ -45,11 +47,12 @@ function manageFormFields() {
   echo $wpdb->last_error
 ?>
   <div class="wrap">
-    <a href="http://localhost/wordpress/wp-admin/admin.php?page=da-members" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>
+    <?php
+    $admin_page_url = admin_url('admin.php?page=da-members');
+    echo '<a href="' . esc_url($admin_page_url) . '" style="text-decoration: none" class="page-title-action">&larr; GO BACK</a>';
+    ?>
     <h1 class="wp-heading-block">Manage Form Fields</h1>
     <?php
-
-
     if (isset($result) && !empty($result['message'])) {
       if ($result['status'] == 'ok') {
         echo "<div id='message' class='notice is-dismissible updated'>

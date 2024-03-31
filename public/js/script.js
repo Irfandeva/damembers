@@ -1,36 +1,41 @@
 jQuery(document).ready(function ($) {
-  let pluginUrl = "../wp-content/plugins/damembers";
 
+  // show email popup on buttonn click
+  $('#new-mail-submit').click(function (e) {
+    e.preventDefault();
+    $('#overlay').css({ 'display': 'block' })
+    $('.email-popup').css({ 'display': 'block' })
+  })
+
+  //close mail popup
+  $('#close-email-popup').click(function () {
+    $('#overlay').css({ 'display': 'none' })
+    $('#email-popup').css({ 'display': 'none' })
+  })
+
+  //delete a member
   $('.delete_da_member').click(function () {
     // $('.popup_container').fadeIn();
     let id = $(this).attr('data-del-id')
+    let delUrl = $(this).attr('data-del-url')
     let memberName = $(this).attr('data-del-member')
     $('.popup_container .del_popup_actions #yes').attr('del-id', id)
     $('.member').html(`${id} . ${memberName}`)
     let popuSpan = `popup_${id}`;
 
     let popup = `<div class="popup_container">
-<div class="del_popup">
-  <span>Are you sure you want to delete this member ? </span>
-  <!--- <span class="member">${id} . ${memberName}</span>--->
-  <div class="del_popup_actions">
-    <span id="no" onClick='hidePopup(${popuSpan})'>Cancel</span>
-    <span id="yes" onClick='deleteMember(${id})'>Yes</span>
-  </div>
-</div>
-</div>`
+                  <div class="del_popup">
+                      <span>Are you sure you want to delete this member ? </span>
+                    <div class="del_popup_actions">
+                      <span id="no" onClick='hidePopup(${popuSpan})'>Cancel</span>
+                      <span id="yes" onClick='deleteMember(${id},"${delUrl}")'>Yes</span>
+                    </div>
+                 </div>
+                </div>`
     $('#overlay').css({ 'display': 'block' })
     $(`#${popuSpan}`).html(popup);
-
   })
 
-  $('.del_popup_actions #yes').click(function () {
-    // $('.popup_container').fadeOut();
-    let id = $(this).attr('del-id')
-    if (id) {
-      location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
-    }
-  })
   $('.del_popup_actions #no').click(function () {
     $('.popup_container').fadeOut();
   })
@@ -76,13 +81,15 @@ jQuery(document).ready(function ($) {
   })
 
 });
+//hide popup
 function hidePopup(popuSpan) {
   jQuery('#overlay').css({ 'display': 'none' })
   jQuery(popuSpan).html('');
 }
-function deleteMember(id) {
+//delete member with given id
+function deleteMember(id, delUrl) {
   if (id) {
-    // jQuery('#overlay').css({ 'display': 'none' })
-    location.replace(`http://localhost/wordpress/wp-admin/admin.php?page=da-members&del_id=${id}`)
+    const deleteUrl = delUrl
+    location.replace(`${deleteUrl}&del_id=${id}`);
   }
 }

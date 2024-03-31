@@ -24,7 +24,7 @@ function all_da_members_sc($atts) {
                 <div class="left-content">
                 <h3>' . $member->first_name . " " . $member->last_name . '</h3>
                 <span class="bio" data-popup = "' . $member->id . '" >Bio
-                <input type="hidden" value="' . htmlentities(stripslashes($member->bio)) . '"/>
+                <input type="hidden" value="' . htmlentities(html_entity_decode(stripslashes($member->bio))) . '"/>
                 </span> 
                 <span class="country">' . $member->country . '</span>
                 </div>
