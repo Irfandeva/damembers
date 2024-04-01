@@ -6,7 +6,7 @@ function all_da_members_sc($atts) {
   $da_members = DA_MEMBERS_TABLE;
   $members = $wpdb->get_results("SELECT * FROM $da_members");
   if (!$members) {
-    return 'No member found with given department name.';
+    return '<p>No members found!</p>';
   }
 
   $da_members_form_fields_table = DA_MEMBERS_FORM_FIELDS_TABLE;

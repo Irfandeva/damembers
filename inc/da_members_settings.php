@@ -53,12 +53,8 @@ function da_members_settings() {
         <ul>
           <li>
             <p class="title">Members Shortcode</p>
-            <p class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia quia laudantium minima quas, numquam dolores doloremque autem architecto quasi? Dolores obcaecati ad, totam accusamus asperiores quo harum rem! Aperiam, delectus.</p>
-            <img src="<?php echo plugin_dir_url(__DIR__) . '/public/images/sc-screenshot.png' ?>" alt="" srcset="">
-          </li>
-          <li>
-            <p class="title">Members By Department</p>
-            <p class="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit..</p>
+            <p class="desc">This sortcode will show all the available DA Members.</p>
+            <span>Usage : </span> <i>[da_members]</i>
             <img src="<?php echo plugin_dir_url(__DIR__) . '/public/images/sc-screenshot.png' ?>" alt="" srcset="">
           </li>
         </ul>
