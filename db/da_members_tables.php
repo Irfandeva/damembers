@@ -10,11 +10,11 @@ function init_tables() {
      id mediumint(11) NOT NULL AUTO_INCREMENT,
      first_name varchar(50) NOT NULL,
      last_name varchar(50) NOT NULL,
-     bio varchar(50) NULL,
+     bio TEXT NULL,
      country varchar(20) NULL,
      designation varchar(50) NULL,
      address varchar(50) NULL,
-     consituency varchar(20) NULL,
+     constituency varchar(20) NULL,
      member_type varchar(50) NULL,
      member_since date DEFAULT CURRENT_DATE,
      department varchar(50) NULL,
@@ -44,14 +44,14 @@ function init_tables() {
   $defaultFormFields = array(
     array('first_name', 'First Name', '1',  '1'),
     array('last_name', 'Last Name', '2',   '1'),
-    array('bio', 'Bio', '3', '0'),
+    array('department', 'Department', '3',   '0'),
     array('country', 'Country', '4', '0'),
     array('designation', 'Designation', '5',  '0'),
     array('address', 'Address', '6',  '0'),
     array('constituency', 'Constituency', '7',  '0'),
     array('member_type', 'Member Type', '8', '0'),
     array('member_since', 'Member Since', '9',   '0'),
-    array('department', 'Department', '10',   '0'),
+    array('bio', 'Bio', '10', '0'),
   );
 
   $defaultFormFieldsToInsert = array();
