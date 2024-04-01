@@ -32,9 +32,9 @@ function send_excel_to_mail() {
     $records_ = fetch_data_for_excel($department, $fields_string, $da_members_table, $created_after, $updated_after);
 
     if (count($records_) > 0) {
-      if (array_key_exists('bio', json_decode(json_encode($records_[0]), TRUE)))
+      if (array_key_exists('bio', json_decode(json_encode($records_[0]), TRUE))) {
         $records = array_map('remove_html', $records_);
-      else $records = $records_;
+      } else $records = $records_;
       $h = json_decode(json_encode($records[0]), TRUE);
       $header_titles = array_keys($h);
       $formatted_heading = array();

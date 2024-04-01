@@ -76,13 +76,11 @@ function daMembersAdd() {
         <?php
         echo "<div class='input-row'>";
         foreach ($form_fields as $form_field) {
-          $property = $form_field->field_name;
-          $column = $form_field->label;
-
+          $label = $form_field->required == '1' ? $form_field->label . '<span style="color:red"> * </span>' : $form_field->label;
           if ($form_field->field_name == 'country' || $form_field->field_name == 'constituency') {
             $options = $form_field->field_name == 'country' ? $select_fields_data['countries'] : $select_fields_data['constituencies'];
             echo "<div class='input-item'>";
-            echo "<label for=$form_field->field_name>$column</label>
+            echo "<label for=$form_field->field_name>$label</label>
               <select name=$form_field->field_name id=$form_field->field_name>";
             foreach ($options as $data) {
               echo "<option value='$data' >$data</option>";
@@ -98,11 +96,11 @@ function daMembersAdd() {
         <?php
         echo "<div class='input-row'>";
         foreach ($form_fields as $form_field) {
-          $column = $form_field->label;
+          $label = $form_field->required == '1' ? $form_field->label . '<span style="color:red"> * </span>' : $form_field->label;
           if ($form_field->field_name == 'member_type' || $form_field->field_name == 'member_since' || $form_field->field_name == 'designation') {
             if ($form_field->field_name == 'member_type') {
               echo "<div class='input-item'>";
-              echo "<label for=$form_field->field_name>$column</label>
+              echo "<label for=$form_field->field_name>$label</label>
                 <select name=$form_field->field_name id=$form_field->field_name>";
               foreach ($select_fields_data['member_types'] as $data) {
                 echo "<option value='$data' >$data</option>";
@@ -111,12 +109,12 @@ function daMembersAdd() {
               echo "</div>";
             } elseif ($form_field->field_name == 'member_since') {
               echo "<div class='input-item'>";
-              echo "<label for=$form_field->field_name>$column</label>
+              echo "<label for=$form_field->field_name>$label</label>
             <input type='date' id='$form_field->field_name' name='$form_field->field_name'>";
               echo "</div>";
             } else {
               echo "<div class='input-item'>";
-              echo "<label for=$form_field->field_name>$column</label>
+              echo "<label for=$form_field->field_name>$label</label>
             <input type='text' id='$form_field->field_name' name='$form_field->field_name'>";
               echo "</div>";
             }
@@ -128,12 +126,10 @@ function daMembersAdd() {
         <?php
         echo "<div class='input-row'>";
         foreach ($form_fields as $form_field) {
-          $property = $form_field->field_name;
-          $column = $form_field->label;
-
+          $label = $form_field->required == '1' ? $form_field->label . '<span style="color:red"> * </span>' : $form_field->label;
           if ($form_field->field_name == 'department' || $form_field->field_name == 'address') {
             echo "<div class='input-item'>";
-            echo "<label for=$form_field->field_name>$column</label>";
+            echo "<label for=$form_field->field_name>$label</label>";
             echo "<input type='text' id='$form_field->field_name' name='$form_field->field_name'>";
             echo "</div>";
           }

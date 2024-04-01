@@ -176,7 +176,6 @@ function daMembersPagination($members, $records_per_page, $search_string, $resul
   }
   //if user has hit search button , dont show pagination
   if (!empty($search_string)) return;
-
   $total_pages = ceil($total_members / $records_per_page);
   $last_page = $total_pages;
   $id = 1;
@@ -214,7 +213,7 @@ function daMembersPagination($members, $records_per_page, $search_string, $resul
 
       <?php
       //next button
-      if (!isset($_GET['page_num'])) {
+      if (!isset($_GET['page_num']) && $total_pages >= 2) {
         echo "<a href='admin.php?page=da-members&page_num=2'>Next</a>";
       } else if (isset($_GET['page_num']) && $_GET['page_num'] < $total_pages) {
         $next_page = $_GET['page_num'] + 1;

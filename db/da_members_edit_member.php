@@ -1,7 +1,6 @@
 <?php
 //FUNCTION TO EDIT UPDATE A MEMBER
 function daMembersEdit() {
-  // HELLO THERE, WELCOME TO THE EDIT PAGE {$_GET['uptid']}; -->
   global $wpdb;
   global $result;
   $id = $_GET['uptid'];
@@ -61,7 +60,6 @@ function daMembersEdit() {
         foreach ($form_fields as $form_field) {
           $property = $form_field->field_name;
           $column = $form_field->label;
-
           if ($form_field->field_name == 'first_name' || $form_field->field_name == 'last_name') {
             $value = htmlentities(stripslashes($da_member->$property));
             echo "<div class='input-item'>";

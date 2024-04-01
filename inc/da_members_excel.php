@@ -85,6 +85,11 @@ function uploadFromExcel() {
       foreach ($excel_rows as $excel_row) {
         //make an assoc array with key being field_name and value being excel row value
         $assoc_row = array_combine($form_fields, $excel_row);
+        //check if array has bio field, remove html tags from it
+        if (array_key_exists('bio', $assoc_row)) {
+          $assoc_row['bio'] = remove_html_from_string($assoc_row['bio']);
+        }
+
         //check if user has not selected any field for mapping
         if (array_key_exists('-1', $assoc_row)) {
           $result['status'] = 'error';
